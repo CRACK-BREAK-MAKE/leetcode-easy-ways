@@ -50,7 +50,7 @@ public class LongestConsecutiveSequence {
         }
         int lcs = 0;
         var set = new HashSet<>(Arrays.stream(nums).boxed().toList());
-        for (var num: nums){
+        for (var num: set){
             if (!set.contains(num - 1)) {
                 int currentNumber = num + 1;
                 while (set.contains(currentNumber)){
