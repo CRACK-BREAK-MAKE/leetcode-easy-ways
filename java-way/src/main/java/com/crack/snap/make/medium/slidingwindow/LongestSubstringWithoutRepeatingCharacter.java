@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class LongestSubstringWithoutRepeatingCharacter {
 
     /**
-     * Problem: Given a string s, find the length of the longest substring without duplicate characters s = "abcabcbb"
+     * Problem: Given a string s, find the length of the longest substring without duplicate characters s = "abba"
      *
      * Intuition:
      * Brute force: Find all substrings and check which is longest without duplicates it will be O(n^2) with O(n) space or O(n^3) time
