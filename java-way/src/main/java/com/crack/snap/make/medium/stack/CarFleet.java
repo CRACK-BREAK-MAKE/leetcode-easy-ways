@@ -1,5 +1,6 @@
 package com.crack.snap.make.medium.stack;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Stack;
 import java.util.TreeMap;
@@ -40,6 +41,8 @@ public class CarFleet {
      * speed was more and from now on it will travel at the speed of the previous car/fleet. If it does not become part of the fleet
      * we will keep this to this data structure and check the next car where we will use this car's time. That mean we will need LIFO
      *
+     * Time complexity: O(nlogn) for sorting and O(n) for traversing the array
+     * Space complexity: O(n) for stack
      * @param target
      * @param position
      * @param speed
@@ -66,9 +69,34 @@ public class CarFleet {
         return stack.size();
     }
 
+    public int carFleetOptimised(int target, int[] position, int[] speed) {
+        if (position == null || position.length == 0 || position.length != speed.length) {
+            return 0;
+        }
+
+        var positionSpeed = new int[position.length][2];
+        for (var i = 0; i < position.length; i++) {
+            positionSpeed[i][0] = position[i];
+            positionSpeed[i][1] = speed[i];
+        }
+
+        Arrays.sort(positionSpeed, ( o1, o2) -> Integer.compare(o2[0], o1[0]));
+        var carFleet = 1;
+        var movingAheadCarTime = (double) (target - positionSpeed[0][0]) / positionSpeed[0][1];
+
+        for (var i = 1; i < positionSpeed.length; i++) {
+            var time = (double) (target - positionSpeed[i][0]) / positionSpeed[i][1];
+            if (time > movingAheadCarTime) {
+                carFleet++;
+                movingAheadCarTime = time;
+            }
+        }
+        return carFleet;
+    }
+
     public static void main(String[] args) {
         var obj = new CarFleet();
-        System.out.println(obj.carFleet(12, new int[]{10, 8, 0, 5, 3}, new int[]{2, 4, 1, 1, 3}));
-        System.out.println(obj.carFleet(10, new int[]{6, 8}, new int[]{3, 2})); // 1 fleet
+        System.out.println(obj.carFleetOptimised(12, new int[]{10, 8, 0, 5, 3}, new int[]{2, 4, 1, 1, 3}));
+        System.out.println(obj.carFleetOptimised(10, new int[]{6, 8}, new int[]{3, 2})); // 1 fleet
     }
 }

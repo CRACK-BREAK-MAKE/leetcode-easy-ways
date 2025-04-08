@@ -51,6 +51,9 @@ public class DailyTemperature {
      * not needed anymore we remove from the data structure and check for the previous of previous index and so on.
      *
      * That means we need a LIFO data structure to keep track of the previous index and their values.
+     *
+     * Time complexity: O(n)
+     * Space complexity: O(n)
      * @param temperatures
      * @return
      */
