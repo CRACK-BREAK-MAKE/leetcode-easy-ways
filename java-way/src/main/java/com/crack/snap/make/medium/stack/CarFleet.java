@@ -69,6 +69,17 @@ public class CarFleet {
         return stack.size();
     }
 
+    /**
+     * Optimised solution:
+     * Instead of using two data structures like above solution where one keeps the sorted position and speed but other one just keeps the time
+     * of the ahead car/fleet. Instead, we can use variable to keep track of the time of the ahead car/fleet and use a single data structure for
+     * sorting the position and speed. This will reduce the space complexity to O(n)
+     *
+     * @param target
+     * @param position
+     * @param speed
+     * @return
+     */
     public int carFleetOptimised(int target, int[] position, int[] speed) {
         if (position == null || position.length == 0 || position.length != speed.length) {
             return 0;
