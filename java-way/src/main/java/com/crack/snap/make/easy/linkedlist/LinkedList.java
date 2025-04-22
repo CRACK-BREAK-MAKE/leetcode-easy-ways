@@ -5,8 +5,8 @@ package com.crack.snap.make.easy.linkedlist;
  */
 public class LinkedList {
 
-    private ListNode head;
-    private ListNode tail;
+    public ListNode head;
+    public ListNode tail;
     private int size;
 
     public void addLast(int data) {
@@ -73,5 +73,17 @@ public class LinkedList {
 
     public int size() {
         return size;
+    }
+
+    public void print(ListNode head) {
+        var current = head;
+        while (current != null) {
+            System.out.print(current.val);
+            if (current.next != null) {
+                System.out.print(" -> ");
+            }
+            current = current.next;
+        }
+        System.out.println();
     }
 }
