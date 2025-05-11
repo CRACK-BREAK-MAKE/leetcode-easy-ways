@@ -52,6 +52,14 @@ public class LongestRepeatingCharacterReplacement {
      * We can also use a dictionary to keep the character count at each index. If end pointer - start pointer - maxCount of the character becomes greater than k
      * We can shift the start pointer to the right and decrement the count of the character at start pointer
      *
+     * At line if (end - start - letterMaxCount > k) for end = 4, When we remove 'A' from the start, we don't update letterMaxCount even though count of A decreased.
+     * Why? Because later we might find another substring with more of some letter. If we reduced letterMaxCount, we might shrink our window too aggressively.
+     * Simple Explanation:
+     * Think of letterMaxCount as "the most frequent character count we've seen in any window." If we find a better window later, that value will be updated
+     * naturally by the Math.max() call. If we don't find a better window, then the current letterMaxCount remains our best value, and we correctly keep it.
+     * The reason this works is our goal is to find the longest valid window overall, not just to make the current window as good as possible. By being conservative
+     * with our shrinking (only shrinking when definitely needed), we ensure we don't miss the optimal solution.
+     *
      * Time Complexity: O(n), where n is the length of the string.
      * Space Complexity: O(1), as we are using a constant amount of extra space.
      */

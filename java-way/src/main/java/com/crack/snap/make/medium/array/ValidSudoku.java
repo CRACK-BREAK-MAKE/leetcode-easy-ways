@@ -66,8 +66,6 @@ public class ValidSudoku {
      * Space Complexity: O(1)
      * - The space used by the set is constant as the board size is fixed.
      *
-     * @param board the 9x9 Sudoku board represented as a 2D array of characters
-     * @return true if the board is valid, false otherwise
      */
     public boolean isValidSudoku(char[][] board) {
         var set = new HashSet<>(27);

@@ -35,8 +35,6 @@ public class GroupAnagram {
      * Output: []
      * If the input list is empty, the output is also an empty list.
      *
-     * @param strs the array of strings to group
-     * @return a list of lists of grouped anagrams
      */
     public List<List<String>> groupAnagrams(String[] strs) {
         if (strs == null || strs.length == 0) {

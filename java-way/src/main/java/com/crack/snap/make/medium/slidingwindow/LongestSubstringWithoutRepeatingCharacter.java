@@ -11,7 +11,8 @@ public class LongestSubstringWithoutRepeatingCharacter {
      * Problem: Given a string s, find the length of the longest substring without duplicate characters s = "abba"
      *
      * Intuition:
-     * Brute force: Find all substrings and check which is longest without duplicates it will be O(n^2) with O(n) space or O(n^3) time
+     * Brute force: Find all substrings and check which is longest without duplicates it will be O(n^2) with O(n) space or O(n^3) time. Formula to find the number of
+     * substrings is n(n+1)/2, where n is the length of the string. So for a string of length n, there are n(n+1)/2 substrings.
      * Since we need substring without duplicates we can use two pointer technique or sliding window
      * Have both pointers initially at 0 and move the end pointer till the end of the string
      * Now between this start and end pointer we will a mechanism to keep track of duplicates
