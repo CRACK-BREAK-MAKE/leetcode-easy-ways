@@ -86,7 +86,7 @@ public class MedianTwoSortedArray {
     }
 
     public static void main(String[] args) {
-        System.out.println(new MedianTwoSortedArray().findMedianSortedArrays(new int[]{1, 3}, new int[]{2})); // 2.0
-        System.out.println(new MedianTwoSortedArray().findMedianSortedArrays(new int[]{1, 2}, new int[]{3, 4})); // 2.5
+        System.out.println(new MedianTwoSortedArray().findMedianSortedArrays(new int[]{2, 3, 6, 7}, new int[]{1, 4, 8, 9})); // 2.0
+        //System.out.println(new MedianTwoSortedArray().findMedianSortedArrays(new int[]{1, 4, 8, 9}, new int[]{3, 4})); // 2.5
     }
 }

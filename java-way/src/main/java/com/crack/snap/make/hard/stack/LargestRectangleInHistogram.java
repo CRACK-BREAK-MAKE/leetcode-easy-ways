@@ -35,32 +35,31 @@ public class LargestRectangleInHistogram {
         if (heights == null || heights.length == 0) {
             return 0;
         }
+
+        var length = heights.length;
         var maxArea = 0;
         // 1 2 3 2 1
         // 0 1 2 3 4
-        for (var i = 0; i < heights.length; i++) {
-            var left = i;
-            var right = i;
+        for (var i = 0; i < length; i++) {
+            var leftBoundary = i;
+            var rightBoundary = i;
 
             int currentHeight = heights[i];
-            while (left > 0 && heights[left - 1] >= currentHeight) {
-                left--;
+            while (leftBoundary > 0 && heights[leftBoundary - 1] >= currentHeight) {
+                leftBoundary--;
             }
-            while (right < heights.length) {
-                if (right == heights.length - 1 || heights[right + 1] < currentHeight) {
-                    break;
-                }
-                right++;
+            while (rightBoundary < length - 1 && heights[rightBoundary + 1] >= currentHeight) {
+                rightBoundary++;
             }
-            maxArea = Math.max(maxArea, currentHeight * (right - left + 1));
+            maxArea = Math.max(maxArea, currentHeight * (rightBoundary - leftBoundary + 1)); // +1 bcs we need to include the right boundary index since 0 index array
         }
         return maxArea;
     }
 
     /**
      * If you notice one detail if the right building is smaller than the current building, we need to stop and
-     * calculate the area. That means as we scan the buildings from left to right is the next building is large
-     * we can keep moving right, but if it is smaller than we know all buildings to the left of it are smaller
+     * calculate the area. That means as we scan the buildings from left to right if the next building is large
+     * we can keep moving right, but if it is smaller than we know all buildings to the left of it are larger
      * meaning we start calculating the area of all the buildings to the left of it.
      * example if the array was [5 2 3 4 1] when we reach 1 we can calculate the area for building with height 4
      * which will be maxArea = max(maxArea, 4 * (4th Index -  3rd index)) = 4, and then we can move to the next building
@@ -79,23 +78,26 @@ public class LargestRectangleInHistogram {
         if (heights == null || heights.length == 0) {
             return 0;
         }
+
+        var length = heights.length;
         var maxArea = 0;
         var stack = new Stack<Integer>();
-        var end = 0;
-        while (end <= heights.length) {
-            // Let's say all heights are increasing order at the end of the array we will never calculate the area.
-            // So the idea is when we reach the end of the array we make the height as 0 so that we can calculate
+        var rightBoundary = 0;
+
+        while (rightBoundary <= length) {
+            // Let's say all heights are increasing order at the rightBoundary of the array we will never calculate the area.
+            // So the idea is when we reach the rightBoundary of the array we make the height as 0 so that we can calculate
             // the area for all the heights that are present in the stack.
-            var currentHeight = end == heights.length ? 0 :  heights[end];
+            var currentHeight = rightBoundary == length ? 0 :  heights[rightBoundary];
             if (stack.isEmpty() || heights[stack.peek()] <= currentHeight) {
-                stack.push(end++);
+                stack.push(rightBoundary++);
             } else {
                 var height = heights[stack.pop()];
+                var leftBoundary = stack.isEmpty() ? 0 : stack.peek() + 1;
                 // why peek + 1 bcs we already removed the last height from the stack so the stack now
                 // contains the previous of the last height but we want to calculate the last height
                 // so we move the add 1 to the index
-                var start = stack.isEmpty() ? 0 : stack.peek() + 1;
-                maxArea = Math.max(maxArea, height * (end - start));
+                maxArea = Math.max(maxArea, height * (rightBoundary - leftBoundary));
 
             }
         }
@@ -104,7 +106,7 @@ public class LargestRectangleInHistogram {
 
     public static void main(String[] args) {
         var obj = new LargestRectangleInHistogram();
-        System.out.println(obj.largestRectangleArea(new int[]{2, 1, 5, 6, 2, 3}));
-        System.out.println(obj.largestRectangleArea(new int[]{2, 1, 2}));
+        System.out.println(obj.largestRectangleAreaBruteForce(new int[]{2, 1, 5, 6, 2, 3}));
+        System.out.println(obj.largestRectangleAreaBruteForce(new int[]{2, 1, 2}));
     }
 }

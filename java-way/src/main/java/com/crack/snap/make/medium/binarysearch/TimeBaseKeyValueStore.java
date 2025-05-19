@@ -15,6 +15,12 @@ import java.util.Map;
  * void set(String key, String value, int timestamp) Stores the key key with the value value at the given time timestamp.
  * String get(String key, int timestamp) Returns a value such that set was called previously, with timestamp_prev <= timestamp.
  * If there are multiple such values, it returns the value associated with the largest timestamp_prev. If there are no values, it returns "".
+ *
+ * Intution: set is pretty straight forward, we need to store the value with the timestamp for a given key. Since there
+ * can be multiple values for the same key we can use Map with key = String and value = will be a list. Again when we
+ * retrieve the value we need to retrieve the right most value for the given timestamp, so we need to store the values
+ * in a pair of (timestamp and value). Also, the constraint already mentions the timestamp will be in increasing order in set
+ * so we need to get the value nearest to the target or the right most to the target, we can follow right most binary search
  */
 public class TimeBaseKeyValueStore {
 
@@ -44,7 +50,7 @@ public class TimeBaseKeyValueStore {
         var start = 0;
         var end = values.size() - 1;
         while (start < end) {
-            var mid = start + (end - start + 1) / 2; // avoid infinite loop
+            var mid = start + (end - start + 1) / 2; // avoid infinite loop pattern of right most binary search
             if (values.get(mid).timestamp <= timestamp) {
                 start = mid;
             } else {

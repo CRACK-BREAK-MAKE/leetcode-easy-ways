@@ -3,7 +3,7 @@ package com.crack.snap.make.medium.binarysearch;
 /**
  * @author Mohan Sharma
  */
-public class search_rotated_sorted_array {
+public class SearchRotatedSortedArray {
 
     /**
      * Problem: There is an integer array nums sorted in ascending order (with distinct values). Prior to being passed to your function,
@@ -98,6 +98,7 @@ public class search_rotated_sorted_array {
         return -1;
     }
 
+    // very similar to finding minimum which follow left most binary search
     private int getRotatedIndex(int[] nums) {
         var start = 0;
         var end = nums.length - 1;
@@ -113,9 +114,9 @@ public class search_rotated_sorted_array {
     }
 
     public static void main(String[] args) {
-        System.out.println(new search_rotated_sorted_array().search(new int[] {1, 3}, 3)); // 1
-        System.out.println(new search_rotated_sorted_array().search(new int[] {4, 5, 6, 7, 0, 1, 2}, 0)); // 4
-        System.out.println(new search_rotated_sorted_array().search(new int[] {4, 5, 6, 7, 0, 1, 2}, 3)); // -1
-        System.out.println(new search_rotated_sorted_array().search(new int[] {1}, 1)); // 1
+        System.out.println(new SearchRotatedSortedArray().search(new int[] {1, 3}, 3)); // 1
+        System.out.println(new SearchRotatedSortedArray().search(new int[] {4, 5, 6, 7, 0, 1, 2}, 0)); // 4
+        System.out.println(new SearchRotatedSortedArray().search(new int[] {4, 5, 6, 7, 0, 1, 2}, 3)); // -1
+        System.out.println(new SearchRotatedSortedArray().search(new int[] {1}, 1)); // 1
     }
 }

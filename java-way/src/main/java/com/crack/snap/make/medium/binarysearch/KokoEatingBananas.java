@@ -54,7 +54,9 @@ public class KokoEatingBananas {
     /**
      * In the above brute force approach we check from speed 1 to max pile bananas to find the minimum speed. Instead of iterating over from
      * 1 .. max pile bananas, we can use binary search to find the minimum speed right in log(n) time complexity.
-     *
+     * If you think through we will see that we can use a variant of binary search which is left most binary search.
+     * We want to find the minimum value among the possible values of k (the speed) that satisfies the condition of
+     * eating all bananas in h hours. Hence it is leftmost binary search.
      * Time Complexity: O(n * log(m)) where n is the number of piles and m is the maximum pile bananas.
      * Space Complexity: O(1)
      * @param piles
@@ -67,14 +69,14 @@ public class KokoEatingBananas {
         }
         var low = 1;
         var high = IntStream.of(piles).max().getAsInt();
-        while (low <= high) {
+        while (low < high) { // why not <=, because instead of one exact value we need to find the leftmost value
             var mid = low + (high - low) / 2;
             var totalHours = 0L;
             for (var pile: piles) {
                 totalHours += (pile + mid - 1) / mid;
             }
             if (totalHours <= h) {
-                high = mid - 1;
+                high = mid; // let's check the value in the left part of the array
             } else {
                 low = mid + 1;
             }

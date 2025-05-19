@@ -60,6 +60,10 @@ public class FindMinimumSortedRotatedArray {
      * Next iteration: start = 4, end = 4 (loop terminates)
      * Answer: nums[start] = 0
      *
+     * Now which binary search pattern to use,
+     * 1. We need to narrow down the result instead of exact match of a target so we can use the "while(start < end)" pattern.
+     * 2. Also we need to find the minimum element that means we can use the leftmost binary search pattern.
+     *
      * Time Complexity: O(log n)
      * Space Complexity: O(1)
      * @param nums
@@ -70,14 +74,14 @@ public class FindMinimumSortedRotatedArray {
             return -1;
         }
         int start = 0, end = nums.length - 1;
-        while (start < end) {
+        while (start < end) { // narrow down instead of exact match
             var mid = start + ((end - start)/ 2);
             if (nums[mid] > nums[end]) {
                 // mid is greater than end meaning the minimum element is in the right half
                 start = mid + 1;
             } else {
                 // mid is less than end meaning the minimum element is in the left half
-                end = mid;
+                end = mid; // left most binary search pattern
             }
         }
         return nums[start]; // since ascending order and rotated, the start will be the minimum element

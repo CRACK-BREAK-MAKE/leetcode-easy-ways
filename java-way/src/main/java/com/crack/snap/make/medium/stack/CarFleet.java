@@ -91,11 +91,11 @@ public class CarFleet {
             positionSpeed[i][1] = speed[i];
         }
 
-        Arrays.sort(positionSpeed, ( o1, o2) -> Integer.compare(o2[0], o1[0]));
-        var carFleet = 1;
-        var movingAheadCarTime = (double) (target - positionSpeed[0][0]) / positionSpeed[0][1];
+        Arrays.sort(positionSpeed, ( a, b) -> b[0]- a[0]);
+        var carFleet = 0;
+        var movingAheadCarTime = Double.MIN_VALUE;
 
-        for (var i = 1; i < positionSpeed.length; i++) {
+        for (var i = 0; i < positionSpeed.length; i++) {
             var time = (double) (target - positionSpeed[i][0]) / positionSpeed[i][1];
             if (time > movingAheadCarTime) {
                 carFleet++;
