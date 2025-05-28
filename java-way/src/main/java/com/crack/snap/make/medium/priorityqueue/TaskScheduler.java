@@ -2,6 +2,7 @@ package com.crack.snap.make.medium.priorityqueue;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
@@ -49,31 +50,51 @@ public class TaskScheduler {
         if (tasks == null || tasks.length == 0) {
             return 0;
         }
-        var count = new int[26];
-        var nextAvailable = new int[26];
+
+        var count = new HashMap<Character, Integer>();
+        var nextAvailable = new HashMap<Character, Integer>();
+
         for (var task : tasks) {
-            count[task - 'A']++;
+            count.compute(task, (k, v) -> v == null ? 1 : v + 1);
         }
-        var time = 0;
-        var processed = tasks.length;
-        while (processed > 0) {
+
+        int time = 0;
+        int processed = 0;
+
+        while (processed < tasks.length) {
+            // Find the available task with highest remaining count and eligible to process
             int maxCount = 0;
-            int taskToRun = -1;
-            for (int i = 0; i < 26; i++) {
-                int taskCount = count[i];
-                if (taskCount > 0 && nextAvailable[i] <= time && taskCount > maxCount) {
-                    maxCount = taskCount;
-                    taskToRun = i;
+            char bestTask = 0;
+            boolean foundTask = false;
+            for (var entry : count.entrySet()) {
+                char task = entry.getKey();
+                int taskCount = entry.getValue();
+
+                if (taskCount > 0 && nextAvailable.getOrDefault(task, 0) <= time) {
+                    if (taskCount > maxCount) {
+                        maxCount = taskCount;
+                        bestTask = task;
+                        foundTask = true;
+                    }
                 }
             }
-
-            if (taskToRun != -1) {
-                count[taskToRun]--;
-                processed--;
-                nextAvailable[taskToRun] = time + n + 1;
+            // if task is found process it otherwise the time will be incremented for idle
+            if (foundTask) {
+                // Execute the best task and update count
+                int newCount = count.get(bestTask) - 1;
+                if (newCount == 0) {
+                    count.remove(bestTask);  // Remove completed tasks
+                    nextAvailable.remove(bestTask);  // Clean up nextAvailable too
+                } else {
+                    count.put(bestTask, newCount);
+                    nextAvailable.put(bestTask, time + n + 1);
+                }
+                processed++;
             }
+
             time++;
         }
+
         return time;
     }
 
@@ -81,7 +102,7 @@ public class TaskScheduler {
      * Intuition: Example ["B", "C", "A", "A", "A"] n = 1
      * First we need to know how many count of each task so we can plan out idle time between two similar tasks
      * Let's say we don't worry about the higher count tasks and just process the tasks in any order then idle time will be more
-     * e.g. if we process B -> C -> A -> idle -> A -> idle -> A then total time = 7 but, we if consider the higher count tasks first
+     * e.g. if we process B -> C -> A -> idle -> A -> idle -> A then total time = 7 but, if consider the higher count tasks first
      * then we can minimize the idle time e.g. A -> B -> A -> C -> A then total time = 5. That means we need to keep track of higher
      * frequency tasks first, for this we can use Max Heap.
      *
@@ -96,6 +117,7 @@ public class TaskScheduler {
         if (tasks == null || tasks.length == 0) {
             return 0;
         }
+        var processed = 0;
         var time = 0;
         var frequencyMap = new HashMap<Character, Integer>();
         for (var taskName : tasks) {
@@ -105,10 +127,11 @@ public class TaskScheduler {
         maxHeap.addAll(frequencyMap.values());
         var coolDownList = new LinkedList<TaskRecord>();
 
-        while (!maxHeap.isEmpty() || !coolDownList.isEmpty()) {
+        while (processed < tasks.length) {
             if (!maxHeap.isEmpty()) {
                 var taskCount = maxHeap.poll();
                 taskCount--;
+                processed++;
                 if (taskCount > 0) {
                     coolDownList.add(new TaskRecord(time + n + 1, taskCount));
                 }

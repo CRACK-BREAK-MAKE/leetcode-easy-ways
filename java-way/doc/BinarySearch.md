@@ -1,7 +1,5 @@
 # Understanding Binary Search Variations
 
-These are great questions about binary search variations. Let me help you develop an intuition about when to use each approach.
-
 ## The Key Variations in Binary Search
 
 There are several key decision points when implementing binary search:
@@ -13,9 +11,9 @@ There are several key decision points when implementing binary search:
     - `left = mid + 1` and `right = mid`
     - `left = mid` and `right = mid - 1`
 
-Let me explain when to use each variation:
+## Develop an intuition about when to use each approach.
 
-## Standard Binary Search (Finding an Exact Match)
+### Standard Binary Search (Finding an Exact Match)
 
 When you're looking for an exact match (like in a sorted array):
 
@@ -34,9 +32,9 @@ while (left <= right) {           // Use <= to check the last element
 return -1;  // Not found
 ```
 
-## Finding the Leftmost/Rightmost Element
+### Finding the Leftmost/Rightmost Element
 
-When looking for the leftmost element that meets a condition:
+#### When looking for the leftmost element that meets a condition:
 
 ```java
 while (left < right) {            // Use < because we're narrowing to a single element
@@ -51,7 +49,7 @@ while (left < right) {            // Use < because we're narrowing to a single e
 return left;  // left == right at this point
 ```
 
-When looking for the rightmost element that meets a condition:
+#### When looking for the rightmost element that meets a condition:
 
 ```java
 while (left < right) {

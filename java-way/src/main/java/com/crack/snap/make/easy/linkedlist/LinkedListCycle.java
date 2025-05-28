@@ -27,11 +27,11 @@ public class LinkedListCycle {
             return false;
         }
         var current = head;
-        var position = 0;
+        var currentPosition = 0;
         while (current != null) {
             var runnerPosition = 0;
             var runner = head;
-            while (runnerPosition < position) {
+            while (runnerPosition < currentPosition) {
                 if (runner == current.next) {
                     return true;
                 }
@@ -39,7 +39,7 @@ public class LinkedListCycle {
                 runnerPosition++;
             }
             current = current.next;
-            position++;
+            currentPosition++;
         }
         return false;
     }
