@@ -17,6 +17,9 @@ public class BinarySearchTreeRightSideView {
      * Intuition: Let's perform a level order traversal of the tree using a queue. At each level iteration, first we will get
      * the size of the queue which will tell us how many nodes are at the current level. Then we will iterate through until the
      * size of the queue is 0, while iterating when the size is 1, we will add the node value to the result list.
+     *
+     * Time Complexity: O(n) where n is the number of nodes in the tree, as we visit each node once.
+     * Space Complexity: O(n) for the queue and the result list in the worst case.
      */
     public List<Integer> rightSideViewBFS(TreeNode root) {
         if (root == null) {
@@ -55,6 +58,9 @@ public class BinarySearchTreeRightSideView {
      * right and increment the level to 1. Now the result size is 1 and the level is also 1, so we add the right child value to the result list.
      * Now when we move to the left child of the root, the level is still 1, but the result size is 2, that means it is not the first node
      * of the level, and we do not add it to the result list.
+     *
+     * Time Complexity: O(n) where n is the number of nodes in the tree, as we visit each node once.
+     * Space Complexity: O(H) (due to the recursion call stack, where H is the height of the tree). In the worst case (skewed tree), H can be N. In a balanced tree, H is O(logN).
      */
     public List<Integer> rightSideViewDFS(TreeNode root) {
         if (root == null) {
