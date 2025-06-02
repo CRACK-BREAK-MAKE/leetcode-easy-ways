@@ -16,6 +16,9 @@ public class ReverseBits {
      * Add the LSB to result: result = result | 1; (result becomes 0001).
      * Discard LSB from n: n = n >> 1; (n becomes 0010).
      * And repeat the process.
+     *
+     * Time Complexity: O(1) because we are always iterating 32 times (for a 32-bit integer).
+     * Space Complexity: O(1) because we are using a constant amount of space for the result and loop variable.
      */
     public int reverseBits(int n) {
         int result = 0;
