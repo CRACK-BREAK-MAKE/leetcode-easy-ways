@@ -12,11 +12,195 @@ Before diving into patterns, understand these basic relationships:
 Interval A: [a1, a2]
 Interval B: [b1, b2]
 
-1. Non-overlapping: a2 < b1 or b2 < a1
-2. Overlapping: a2 >= b1 and b2 >= a1  
-3. A contains B: a1 <= b1 and a2 >= b2
-4. Adjacent: a2 == b1 or b2 == a1
+1. Non-overlapping: a2 < b1 or b2 < a1 // one ends before other starts
+2. Overlapping: a2 >= b1 and b2 >= a1  // they share at least one point
+3. A contains B: a1 <= b1 and a2 >= b2 // one interval is completely inside another
+4. Adjacent: a2 == b1 or b2 == a1 // they meet exactly at one point
 ```
+
+# Understanding Interval Relationship Patterns
+
+## Visual Examples of Interval Relationships
+
+### 1. Non-overlapping Intervals
+**Condition**: `a2 < b1` OR `b2 < a1`
+
+```
+Case 1: A ends before B starts (a2 < b1)
+A: [1, 3]     ----
+B: [5, 7]           ----
+   1 2 3 4 5 6 7
+
+Case 2: B ends before A starts (b2 < a1)  
+A: [5, 7]           ----
+B: [1, 3]     ----
+   1 2 3 4 5 6 7
+```
+
+**LeetCode Example**: Non-overlapping Intervals
+```java
+// Check if intervals are non-overlapping
+boolean isNonOverlapping(int[] a, int[] b) {
+    return a[1] < b[0] || b[1] < a[0];
+}
+```
+
+### 2. Overlapping Intervals
+**Condition**: `a2 >= b1` AND `b2 >= a1`
+
+```
+Case 1: Partial overlap
+A: [1, 4]     ------
+B: [3, 6]       ------
+   1 2 3 4 5 6
+
+Case 2: A starts after B starts
+A: [3, 7]       --------
+B: [1, 5]     ------
+   1 2 3 4 5 6 7
+
+Case 3: Same start, different ends
+A: [2, 5]     ------
+B: [2, 7]     --------
+   1 2 3 4 5 6 7
+```
+
+**LeetCode Example**: Merge Intervals
+```java
+// Check if intervals overlap
+boolean isOverlapping(int[] a, int[] b) {
+    return a[1] >= b[0] && b[1] >= a[0];
+}
+
+// Find overlap region
+int[] getOverlap(int[] a, int[] b) {
+    if (!isOverlapping(a, b)) return null;
+    return new int[]{Math.max(a[0], b[0]), Math.min(a[1], b[1])};
+}
+```
+
+### 3. One Interval Contains Another
+**Condition**: `a1 <= b1` AND `a2 >= b2`
+
+```
+A contains B:
+A: [1, 7]     ----------
+B: [3, 5]       ----
+   1 2 3 4 5 6 7
+
+B contains A:
+A: [3, 5]       ----
+B: [1, 7]     ----------
+   1 2 3 4 5 6 7
+```
+
+**LeetCode Example**: Remove Covered Intervals
+```java
+// Check if A contains B
+boolean contains(int[] a, int[] b) {
+    return a[0] <= b[0] && a[1] >= b[1];
+}
+
+// Remove covered intervals
+int removeCoveredIntervals(int[][] intervals) {
+    Arrays.sort(intervals, (a, b) -> a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]);
+    
+    int count = 0;
+    int prevEnd = 0;
+    
+    for (int[] interval : intervals) {
+        if (interval[1] > prevEnd) {  // Not covered by previous
+            count++;
+            prevEnd = interval[1];
+        }
+    }
+    return count;
+}
+```
+
+### 4. Adjacent Intervals
+**Condition**: `a2 == b1` OR `b2 == a1`
+
+```
+Case 1: A ends where B starts (a2 == b1)
+A: [1, 3]     ----
+B: [3, 5]         ----
+   1 2 3 4 5
+
+Case 2: B ends where A starts (b2 == a1)
+A: [3, 5]         ----
+B: [1, 3]     ----
+   1 2 3 4 5
+```
+
+**LeetCode Example**: Summary Ranges
+```java
+// Check if intervals are adjacent
+boolean isAdjacent(int[] a, int[] b) {
+    return a[1] == b[0] || b[1] == a[0];
+}
+
+// Merge adjacent intervals
+List<int[]> mergeAdjacent(List<int[]> intervals) {
+    Collections.sort(intervals, (a, b) -> a[0] - b[0]);
+    List<int[]> result = new ArrayList<>();
+    
+    for (int[] interval : intervals) {
+        if (result.isEmpty() || result.get(result.size()-1)[1] < interval[0]) {
+            result.add(interval);  // No overlap or adjacency
+        } else {
+            // Merge with previous (overlapping or adjacent)
+            result.get(result.size()-1)[1] = Math.max(result.get(result.size()-1)[1], interval[1]);
+        }
+    }
+    return result;
+}
+```
+
+## Common LeetCode Problems by Pattern
+
+### Non-overlapping Pattern
+- **Non-overlapping Intervals**: Remove minimum intervals to make rest non-overlapping
+- **Meeting Rooms**: Check if person can attend all meetings
+
+### Overlapping Pattern
+- **Merge Intervals**: Combine all overlapping intervals
+- **Insert Interval**: Insert new interval and merge if needed
+- **Meeting Rooms II**: Find minimum meeting rooms needed
+
+### Containment Pattern
+- **Remove Covered Intervals**: Remove intervals that are covered by others
+- **Interval List Intersections**: Find intersection of two interval lists
+
+### Adjacent Pattern
+- **Summary Ranges**: Find ranges in sorted array
+- **Data Stream as Disjoint Intervals**: Maintain disjoint intervals from stream
+
+## Quick Decision Framework
+
+```java
+// Universal interval relationship checker
+public enum IntervalRelation {
+    NON_OVERLAPPING, OVERLAPPING, A_CONTAINS_B, B_CONTAINS_A, ADJACENT
+}
+
+IntervalRelation getRelation(int[] a, int[] b) {
+    if (a[1] < b[0] || b[1] < a[0]) return NON_OVERLAPPING;
+    if (a[1] == b[0] || b[1] == a[0]) return ADJACENT;
+    if (a[0] <= b[0] && a[1] >= b[1]) return A_CONTAINS_B;
+    if (b[0] <= a[0] && b[1] >= a[1]) return B_CONTAINS_A;
+    return OVERLAPPING;
+}
+```
+
+## Memory Tips
+
+1. **Non-overlapping**: Think "completely separate" - one ends before other starts
+2. **Overlapping**: Think "any intersection" - they share at least one point
+3. **Contains**: Think "nested" - one interval is completely inside another
+4. **Adjacent**: Think "touching" - they meet exactly at one point
+
+The key insight: Sort intervals first, then these relationships become easier to detect and handle!
 
 ## The Master Pattern: Sort First, Then Process
 
