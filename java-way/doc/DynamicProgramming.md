@@ -1,4 +1,4 @@
-# Understanding Dynamic Programming Patterns
+# Comprehensive Dynamic Programming Patterns Guide
 
 ## The Core Intuition
 
@@ -40,10 +40,13 @@ public int linearDP(int[] arr) {
 }
 ```
 
-**Classic Examples:**
-- **House Robber**: `dp[i] = max(dp[i-1], dp[i-2] + nums[i])`
-- **Maximum Subarray**: `dp[i] = max(dp[i-1] + nums[i], nums[i])`
-- **Climbing Stairs**: `dp[i] = dp[i-1] + dp[i-2]`
+**LeetCode Problems**: 198 (House Robber), 53 (Maximum Subarray), 70 (Climbing Stairs), 746 (Min Cost Climbing Stairs), 91 (Decode Ways)
+
+**Key Insights**:
+- Often involves include/exclude decisions
+- Watch for circular constraints (House Robber II)
+- Can usually be space-optimized to O(1)
+- Base cases are critical - handle edge cases carefully
 
 ### Pattern 2: Grid DP (2D State)
 **When to use**: Moving through a 2D grid with path-dependent decisions
@@ -71,10 +74,13 @@ public int gridDP(int[][] grid) {
 }
 ```
 
-**Classic Examples:**
-- **Unique Paths**: `dp[i][j] = dp[i-1][j] + dp[i][j-1]`
-- **Minimum Path Sum**: `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`
-- **Edit Distance**: `dp[i][j] = min of insert/delete/replace operations`
+**LeetCode Problems**: 62 (Unique Paths), 63 (Unique Paths II), 64 (Minimum Path Sum), 120 (Triangle), 174 (Dungeon Game)
+
+**Key Insights**:
+- Initialize boundaries carefully
+- Consider all possible directions (up/down/left/right)
+- Space can be optimized to O(min(m,n))
+- Triangle problems are variations of grid DP
 
 ### Pattern 3: Knapsack DP (Choice-based)
 **When to use**: Making optimal choices with constraints (weight, capacity, etc.)
@@ -103,10 +109,13 @@ public int knapsack(int[] weights, int[] values, int capacity) {
 }
 ```
 
-**Variations:**
-- **0/1 Knapsack**: Each item used at most once
-- **Unbounded Knapsack**: Items can be used multiple times
-- **Coin Change**: Special case of unbounded knapsack
+**LeetCode Problems**: 322 (Coin Change), 518 (Coin Change II), 377 (Combination Sum IV), 416 (Partition Equal Subset Sum), 494 (Target Sum)
+
+**Key Insights**:
+- 0/1 vs Unbounded: order of loops matters
+- For unbounded: inner loop uses `dp[i][w]` instead of `dp[i-1][w]`
+- Subset sum problems are boolean knapsack variants
+- Can be space-optimized to 1D array
 
 ### Pattern 4: Interval DP (Range-based)
 **When to use**: Optimal way to combine/split intervals or ranges
@@ -141,10 +150,13 @@ public int intervalDP(int[] arr) {
 }
 ```
 
-**Classic Examples:**
-- **Matrix Chain Multiplication**: `dp[i][j] = min cost to multiply matrices i to j`
-- **Palindrome Partitioning**: `dp[i][j] = min cuts for s[i...j] to be palindromic`
-- **Burst Balloons**: `dp[i][j] = max coins from bursting balloons between i and j`
+**LeetCode Problems**: 312 (Burst Balloons), 1312 (Minimum Insertion Steps to Make String Palindrome), 516 (Longest Palindromic Subsequence), 647 (Palindromic Substrings)
+
+**Key Insights**:
+- Length-based iteration is crucial
+- Often involves trying all split points
+- Palindrome problems are common interval DP applications
+- Matrix chain multiplication is the classic example
 
 ### Pattern 5: State Machine DP
 **When to use**: Problems with distinct states and transitions between states
@@ -172,68 +184,251 @@ public int stockDP(int[] prices) {
 }
 ```
 
-**Classic Examples:**
-- **Best Time to Buy/Sell Stock**: Various state transitions
-- **House Robber in Circle**: States for robbing first house or not
-- **Paint House**: States for different colors
+**LeetCode Problems**: 121 (Best Time to Buy and Sell Stock), 122, 123, 188, 309 (with cooldown), 714 (with transaction fee)
 
-### Pattern 6: Digit DP
-**When to use**: Problems involving constraints on digits of numbers
-**State definition**: `dp[pos][tight][state]` = count/sum for position pos with constraints
+**Key Insights**:
+- Define states clearly (hold/sold/cooldown)
+- Track transaction limits when applicable
+- State transitions must be valid
+- Can often be space-optimized
+
+### Pattern 6: Subsequence DP (Two Sequences)
+**When to use**: Comparing two sequences for common patterns
+**State definition**: `dp[i][j]` = optimal solution using first i elements of seq1 and first j elements of seq2
 
 ```java
-// Template for Digit DP
-public class DigitDP {
-    private int[][][] memo;
-    private String num;
+// Template for Two Sequence DP
+public int twoSequenceDP(String s1, String s2) {
+    int m = s1.length(), n = s2.length();
+    int[][] dp = new int[m + 1][n + 1];
     
-    public int digitDP(int n) {
-        num = String.valueOf(n);
-        memo = new int[num.length()][2][/* state size */];
-        // Initialize memo with -1
-        
-        return solve(0, 1, initialState);
+    // Base cases
+    for (int i = 0; i <= m; i++) dp[i][0] = baseCaseForS1(i);
+    for (int j = 0; j <= n; j++) dp[0][j] = baseCaseForS2(j);
+    
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (s1.charAt(i-1) == s2.charAt(j-1)) {
+                dp[i][j] = dp[i-1][j-1] + matchValue;
+            } else {
+                dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]); // or other operations
+            }
+        }
     }
     
-    private int solve(int pos, int tight, int state) {
-        if (pos == num.length()) {
-            return isValidState(state) ? 1 : 0;
+    return dp[m][n];
+}
+```
+
+**LeetCode Problems**: 1143 (Longest Common Subsequence), 72 (Edit Distance), 97 (Interleaving String), 115 (Distinct Subsequences)
+
+**Key Insights**:
+- Match vs no-match decisions at each step
+- Edit distance problems involve insert/delete/replace operations
+- Can be space-optimized to O(min(m,n))
+- Base cases represent empty string scenarios
+
+### Pattern 7: Palindrome DP
+**When to use**: Problems involving palindromic properties
+**State definition**: `dp[i][j]` = whether substring from i to j is palindrome (or palindrome-related property)
+
+```java
+// Template for Palindrome DP
+public boolean[][] buildPalindromeDP(String s) {
+    int n = s.length();
+    boolean[][] dp = new boolean[n][n];
+    
+    // Single characters are palindromes
+    for (int i = 0; i < n; i++) {
+        dp[i][i] = true;
+    }
+    
+    // Check for palindromes of length 2
+    for (int i = 0; i < n - 1; i++) {
+        dp[i][i + 1] = (s.charAt(i) == s.charAt(i + 1));
+    }
+    
+    // Check for lengths greater than 2
+    for (int len = 3; len <= n; len++) {
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            dp[i][j] = (s.charAt(i) == s.charAt(j)) && dp[i + 1][j - 1];
+        }
+    }
+    
+    return dp;
+}
+```
+
+**LeetCode Problems**: 5 (Longest Palindromic Substring), 647 (Palindromic Substrings), 131 (Palindrome Partitioning), 132 (Palindrome Partitioning II)
+
+**Key Insights**:
+- Expand around centers or use length-based iteration
+- Precompute palindrome table for complex problems
+- Manacher's algorithm for linear time palindrome detection
+- Partition problems often combine with other DP patterns
+
+### Pattern 8: Bitmask DP
+**When to use**: Small state space that can be represented as bits (typically n ≤ 20)
+**State definition**: `dp[mask]` = optimal solution for state represented by bitmask
+
+```java
+// Template for Bitmask DP
+public int bitmaskDP(int[][] cost) {
+    int n = cost.length;
+    int[] dp = new int[1 << n];
+    Arrays.fill(dp, Integer.MAX_VALUE);
+    dp[0] = 0;
+    
+    for (int mask = 0; mask < (1 << n); mask++) {
+        if (dp[mask] == Integer.MAX_VALUE) continue;
+        
+        int person = Integer.bitCount(mask); // Next person to assign
+        
+        for (int task = 0; task < n; task++) {
+            if ((mask & (1 << task)) == 0) { // Task not assigned
+                int newMask = mask | (1 << task);
+                dp[newMask] = Math.min(dp[newMask], dp[mask] + cost[person][task]);
+            }
+        }
+    }
+    
+    return dp[(1 << n) - 1];
+}
+```
+
+**LeetCode Problems**: 691 (Stickers to Spell Word), 1125 (Smallest Sufficient Team), 1284 (Minimum Number of Flips), 847 (Shortest Path Visiting All Nodes)
+
+**Key Insights**:
+- Use when n ≤ 20 (2^20 ≈ 1M states)
+- Represent subsets as bitmasks
+- TSP and assignment problems are classic applications
+- Combine with other patterns (like graph traversal)
+
+### Pattern 9: Tree DP
+**When to use**: Optimization problems on trees
+**State definition**: `dp[node][state]` = optimal solution for subtree rooted at node with given state
+
+```java
+// Template for Tree DP
+public class TreeDP {
+    private Map<TreeNode, Integer[]> memo = new HashMap<>();
+    
+    public int treeDP(TreeNode root) {
+        if (root == null) return 0;
+        
+        if (memo.containsKey(root)) return memo.get(root)[0];
+        
+        // Two states: include root or not
+        int include = root.val;
+        int exclude = 0;
+        
+        if (root.left != null) {
+            Integer[] leftDP = dfs(root.left);
+            include += leftDP[1]; // If include root, can't include children
+            exclude += Math.max(leftDP[0], leftDP[1]); // Can include or exclude children
         }
         
-        if (memo[pos][tight][state] != -1) {
-            return memo[pos][tight][state];
+        if (root.right != null) {
+            Integer[] rightDP = dfs(root.right);
+            include += rightDP[1];
+            exclude += Math.max(rightDP[0], rightDP[1]);
         }
         
-        int limit = tight == 1 ? (num.charAt(pos) - '0') : 9;
-        int result = 0;
-        
-        for (int digit = 0; digit <= limit; digit++) {
-            int newTight = (tight == 1 && digit == limit) ? 1 : 0;
-            int newState = updateState(state, digit);
-            result += solve(pos + 1, newTight, newState);
-        }
-        
-        return memo[pos][tight][state] = result;
+        Integer[] result = new Integer[]{include, exclude};
+        memo.put(root, result);
+        return Math.max(include, exclude);
+    }
+    
+    private Integer[] dfs(TreeNode node) {
+        // Similar logic...
+        return new Integer[]{0, 0}; // [include, exclude]
     }
 }
 ```
+
+**LeetCode Problems**: 337 (House Robber III), 124 (Binary Tree Maximum Path Sum), 968 (Binary Tree Cameras), 979 (Distribute Coins in Binary Tree)
+
+**Key Insights**:
+- Post-order traversal for bottom-up DP
+- Often involves include/exclude states for each node
+- Path problems may require tracking path through node vs ending at node
+- Memoization or pass results up the recursion
+
+### Pattern 10: String Matching DP
+**When to use**: Pattern matching with wildcards or regular expressions
+**State definition**: `dp[i][j]` = whether first i characters of string match first j characters of pattern
+
+```java
+// Template for String Matching DP
+public boolean isMatch(String s, String p) {
+    int m = s.length(), n = p.length();
+    boolean[][] dp = new boolean[m + 1][n + 1];
+    
+    // Base case: empty pattern matches empty string
+    dp[0][0] = true;
+    
+    // Handle patterns like a* that can match empty string
+    for (int j = 1; j <= n; j++) {
+        if (p.charAt(j - 1) == '*') {
+            dp[0][j] = dp[0][j - 2]; // * matches zero occurrences
+        }
+    }
+    
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            char sc = s.charAt(i - 1);
+            char pc = p.charAt(j - 1);
+            
+            if (pc == '*') {
+                // * can match zero or more of preceding character
+                dp[i][j] = dp[i][j - 2]; // Zero occurrences
+                if (matches(sc, p.charAt(j - 2))) {
+                    dp[i][j] |= dp[i - 1][j]; // One or more occurrences
+                }
+            } else if (matches(sc, pc)) {
+                dp[i][j] = dp[i - 1][j - 1];
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+
+private boolean matches(char s, char p) {
+    return p == '.' || s == p;
+}
+```
+
+**LeetCode Problems**: 10 (Regular Expression Matching), 44 (Wildcard Matching), 87 (Scramble String)
+
+**Key Insights**:
+- Handle wildcards and special characters carefully
+- Base cases for empty strings/patterns are crucial
+- Regular expressions are more complex than simple wildcards
+- Consider zero-occurrence matches for * patterns
 
 ## DP Implementation Strategies
 
 ### Strategy 1: Top-Down (Memoization)
 **When to use**: Complex state transitions, not all subproblems needed
+
 ```java
 private Map<String, Integer> memo = new HashMap<>();
 
-public int topDown(/* parameters */) {
-    String key = createKey(/* parameters */);
+public int topDown(int i, int j, /* other params */) {
+    // Create unique key for state
+    String key = i + "," + j + "," + /* other params */;
     if (memo.containsKey(key)) return memo.get(key);
     
     // Base cases
-    if (baseCondition) return baseValue;
+    if (i >= n || j >= m) return baseCase;
     
     // Recursive relations
-    int result = /* recursive calls with memoization */;
+    int result = Math.max(
+        topDown(i + 1, j, /* params */) + choice1,
+        topDown(i, j + 1, /* params */) + choice2
+    );
     
     memo.put(key, result);
     return result;
@@ -242,36 +437,44 @@ public int topDown(/* parameters */) {
 
 ### Strategy 2: Bottom-Up (Tabulation)
 **When to use**: Clear order of subproblem dependencies, need all subproblems
+
 ```java
-public int bottomUp(/* parameters */) {
-    // Initialize DP table
-    int[][] dp = new int[size1][size2];
+public int bottomUp(int n, int m) {
+    int[][] dp = new int[n + 1][m + 1];
     
     // Base cases
-    initializeBaseCases(dp);
+    for (int i = 0; i <= n; i++) dp[i][0] = baseCaseI(i);
+    for (int j = 0; j <= m; j++) dp[0][j] = baseCaseJ(j);
     
     // Fill table in correct order
-    for (int i = /* start */; i < /* end */; i++) {
-        for (int j = /* start */; j < /* end */; j++) {
-            dp[i][j] = /* recurrence relation */;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            dp[i][j] = Math.max(
+                dp[i-1][j] + cost1,
+                dp[i][j-1] + cost2
+            );
         }
     }
     
-    return dp[/* final answer position */];
+    return dp[n][m];
 }
 ```
 
 ### Strategy 3: Space Optimization
 **When to use**: Only need previous row/column for current computation
+
 ```java
-public int spaceOptimized(/* parameters */) {
-    // Instead of 2D array, use 1D or just variables
-    int[] prev = new int[size];
-    int[] curr = new int[size];
+public int spaceOptimized(int n, int m) {
+    int[] prev = new int[m + 1];
+    int[] curr = new int[m + 1];
     
-    for (int i = 0; i < /* iterations */; i++) {
-        for (int j = 0; j < size; j++) {
-            curr[j] = /* recurrence using prev */;
+    // Initialize base cases
+    for (int j = 0; j <= m; j++) prev[j] = baseCaseJ(j);
+    
+    for (int i = 1; i <= n; i++) {
+        curr[0] = baseCaseI(i);
+        for (int j = 1; j <= m; j++) {
+            curr[j] = Math.max(prev[j] + cost1, curr[j-1] + cost2);
         }
         // Swap arrays
         int[] temp = prev;
@@ -279,48 +482,68 @@ public int spaceOptimized(/* parameters */) {
         curr = temp;
     }
     
-    return prev[/* answer position */];
+    return prev[m];
 }
 ```
 
 ## Pattern Recognition Decision Tree
 
 1. **Is it asking for optimal (max/min) or count of ways?** → Likely DP
-2. **Can I make choices at each step?** → Yes, continue to next question
-3. **What are my states/parameters that change?**
-    - One changing parameter → Linear DP
-    - Two parameters (often position-based) → Grid/2D DP
-    - Capacity + items → Knapsack DP
-    - Range/interval → Interval DP
-    - Distinct modes/states → State Machine DP
-    - Digit constraints → Digit DP
+2. **What's the structure of the problem?**
+   - **Sequence with choices** → Linear DP
+   - **2D grid movement** → Grid DP
+   - **Items + capacity** → Knapsack DP
+   - **Range/interval** → Interval DP
+   - **Multiple states** → State Machine DP
+   - **Two sequences** → Subsequence DP
+   - **Palindrome properties** → Palindrome DP
+   - **Small subset (n≤20)** → Bitmask DP
+   - **Tree structure** → Tree DP
+   - **Pattern matching** → String Matching DP
 
-## Common DP Problem Categories
+## LeetCode 150 DP Problems Coverage
 
-### Category 1: Sequence DP
-- **Longest Increasing Subsequence**: `dp[i] = max length ending at i`
-- **Longest Common Subsequence**: `dp[i][j] = LCS of first i and j characters`
-- **Maximum Subarray**: `dp[i] = max sum ending at i`
+### Easy (70, 121, 198)
+- **70. Climbing Stairs**: Linear DP (Fibonacci variant)
+- **121. Best Time to Buy and Sell Stock**: State Machine DP (single transaction)
+- **198. House Robber**: Linear DP (include/exclude)
 
-### Category 2: Grid Traversal DP
-- **Unique Paths**: Count ways to reach bottom-right
-- **Minimum Path Sum**: Find cheapest path
-- **Dungeon Game**: Minimum health needed
+### Medium (5, 22, 53, 62, 63, 64, 91, 120, 139, 152, 189, 213, 221, 279, 300, 322, 337, 416, 494, 518, 647, 714, 746, 1143)
+- **5. Longest Palindromic Substring**: Palindrome DP
+- **53. Maximum Subarray**: Linear DP (Kadane's algorithm)
+- **62, 63. Unique Paths**: Grid DP
+- **64. Minimum Path Sum**: Grid DP
+- **91. Decode Ways**: Linear DP
+- **120. Triangle**: Grid DP (variant)
+- **139. Word Break**: Linear DP with string matching
+- **152. Maximum Product Subarray**: Linear DP (track min/max)
+- **213. House Robber II**: Linear DP (circular constraint)
+- **221. Maximal Square**: Grid DP
+- **279. Perfect Squares**: Knapsack DP
+- **300. Longest Increasing Subsequence**: Linear DP (with binary search optimization)
+- **322. Coin Change**: Knapsack DP (min coins)
+- **337. House Robber III**: Tree DP
+- **416. Partition Equal Subset Sum**: Knapsack DP (boolean)
+- **494. Target Sum**: Knapsack DP
+- **518. Coin Change II**: Knapsack DP (count ways)
+- **647. Palindromic Substrings**: Palindrome DP
+- **714. Best Time to Buy and Sell Stock with Transaction Fee**: State Machine DP
+- **746. Min Cost Climbing Stairs**: Linear DP
+- **1143. Longest Common Subsequence**: Subsequence DP
 
-### Category 3: Decision-Making DP
-- **House Robber**: Choose houses to rob optimally
-- **Best Time to Buy/Sell Stock**: Choose when to buy/sell
-- **Jump Game**: Choose jumps to reach end
-
-### Category 4: Partition DP
-- **Palindrome Partitioning**: Minimum cuts for palindromic partition
-- **Word Break**: Can string be segmented into words
-- **Perfect Squares**: Minimum squares that sum to n
-
-### Category 5: Game Theory DP
-- **Stone Game**: Optimal play in two-player games
-- **Predict the Winner**: Who wins with optimal play
-- **Nim Game**: Game state analysis
+### Hard (10, 32, 42, 72, 85, 115, 123, 132, 174, 188, 309, 312, 410, 514, 516, 1312)
+- **10. Regular Expression Matching**: String Matching DP
+- **32. Longest Valid Parentheses**: Linear DP
+- **42. Trapping Rain Water**: Linear DP
+- **72. Edit Distance**: Subsequence DP
+- **85. Maximal Rectangle**: Grid DP (with stack optimization)
+- **115. Distinct Subsequences**: Subsequence DP
+- **123, 188. Best Time to Buy and Sell Stock III & IV**: State Machine DP (transaction limits)
+- **132. Palindrome Partitioning II**: Palindrome DP + Linear DP
+- **174. Dungeon Game**: Grid DP (reverse direction)
+- **309. Best Time to Buy and Sell Stock with Cooldown**: State Machine DP
+- **312. Burst Balloons**: Interval DP
+- **516. Longest Palindromic Subsequence**: Palindrome DP
 
 ## Time and Space Complexity Patterns
 
@@ -330,34 +553,43 @@ public int spaceOptimized(/* parameters */) {
 - **Knapsack**: O(n × capacity)
 - **Interval DP**: O(n³) typically
 - **String DP**: O(n × m) for two strings
+- **Bitmask DP**: O(n × 2^n)
+- **Tree DP**: O(n) where n is number of nodes
 
 ### Space Complexity:
 - **Original**: Same as time complexity for space
 - **Optimized**: Often reducible to O(1) or O(n) using rolling arrays
+- **Memoization**: Can be higher due to recursion stack
 
-## Red Flags for DP Problems
+## Common Mistakes and Tips
 
-### Problem Statement Keywords:
-- "Maximum/Minimum" + "optimal"
-- "Count number of ways"
-- "Can you reach/achieve"
-- "Longest/Shortest" subsequence/path
-- "Partition into" + optimal condition
-- "Game theory" + optimal play
+### Common Mistakes:
+1. **Wrong base cases**: Always handle edge cases carefully
+2. **Incorrect state transitions**: Ensure all valid transitions are considered
+3. **Off-by-one errors**: Pay attention to 0-indexed vs 1-indexed
+4. **Memory limits**: Use space optimization when possible
+5. **Integer overflow**: Use long when needed
 
-### Structural Indicators:
-- Choices at each step
-- Current choice affects future choices
-- Overlapping subproblems (same calculation repeated)
-- Optimal substructure (optimal solution uses optimal subsolutions)
+### Pro Tips:
+1. **Start with brute force**: Understand the problem first
+2. **Identify overlapping subproblems**: This confirms DP is applicable
+3. **Draw the state transition**: Visualize how states connect
+4. **Test with small examples**: Verify your recurrence relation
+5. **Consider space optimization**: After getting the correct solution
 
-## Template Selection Guide
+## Template Selection Quick Reference
 
-| Problem Characteristics | Pattern | Key Insight |
-|------------------------|---------|-------------|
-| Sequence with choices | Linear DP | State = position in sequence |
-| 2D grid movement | Grid DP | State = (row, col) position |
-| Items + capacity limit | Knapsack | State = (items considered, remaining capacity) |
-| Range/interval optimization | Interval DP | State = (start, end) of range |
-| Multiple distinct states | State Machine | State = current mode/condition |
-| Digit/number constraints | Digit DP | State = (position, tight, extra info) |
+| Problem Type | Pattern | Time | Space | Key Insight |
+|-------------|---------|------|-------|-------------|
+| Sequential choices | Linear DP | O(n) | O(1) | Include/exclude decisions |
+| Grid traversal | Grid DP | O(mn) | O(mn) | Path-dependent optimization |
+| Items + constraints | Knapsack | O(nW) | O(W) | Capacity-based decisions |
+| Range operations | Interval DP | O(n³) | O(n²) | Split-point optimization |
+| Multiple states | State Machine | O(n) | O(1) | State transitions |
+| Two sequences | Subsequence DP | O(mn) | O(mn) | Match/no-match decisions |
+| Palindromes | Palindrome DP | O(n²) | O(n²) | Center expansion or length-based |
+| Small subsets | Bitmask DP | O(n2^n) | O(2^n) | Subset enumeration |
+| Tree problems | Tree DP | O(n) | O(h) | Include/exclude nodes |
+| Pattern matching | String Match DP | O(mn) | O(mn) | Wildcard/regex handling |
+
+This comprehensive guide covers all major DP patterns you'll encounter in LeetCode 150 and technical interviews. Each pattern includes the key problems, insights, and implementation details you need to master dynamic programming.

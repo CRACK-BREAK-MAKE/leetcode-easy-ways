@@ -367,6 +367,274 @@ public int eraseOverlapIntervals(int[][] intervals) {
 }
 ```
 
+
+### Pattern 7: "Sweep Line + Heap"
+
+**Sweep Line** = Process events in sorted order while maintaining active state
+
+### Core Indicators:
+- ✅ **Multiple queries/events** to process
+- ✅ **Sorted processing** can avoid redundant work
+- ✅ Need to **maintain active set** of intervals
+- ✅ **State changes** at specific points (start/end of intervals)
+- ✅ **Optimization per query** rather than global optimization
+
+### Template Structure:
+```java
+// 1. Sort intervals and queries
+// 2. Process queries in sorted order
+// 3. Maintain active intervals (add when start <= query)
+// 4. Remove expired intervals (remove when end < query)  
+// 5. Answer query using current active set
+```
+
+---
+
+## Sweep Line Problem Examples
+
+### 1. **LeetCode 1851 - Minimum Interval to Include Each Query**
+**Pattern**: Sweep Line + Min-Heap
+```
+Problem: Find smallest interval containing each query
+Why Sweep Line: Multiple queries, need active intervals, minimize per query
+```
+
+### 2. **LeetCode 218 - The Skyline Problem**
+**Pattern**: Sweep Line + Max-Heap
+```
+Problem: Find skyline formed by buildings
+Why Sweep Line: Process start/end events, maintain active building heights
+```
+
+### 3. **LeetCode 391 - Perfect Rectangle**
+**Pattern**: Sweep Line + Coordinate Compression
+```
+Problem: Check if rectangles form perfect rectangle without gaps/overlaps
+Why Sweep Line: Process vertical edges, check horizontal coverage
+```
+
+### 4. **LeetCode 850 - Rectangle Area II**
+**Pattern**: Sweep Line + Segment Tree
+```
+Problem: Find total area covered by rectangles (with overlaps)
+Why Sweep Line: Process vertical edges, maintain active horizontal segments
+```
+
+### 5. **Range Sum Queries with Updates**
+**Pattern**: Sweep Line + Fenwick Tree
+```
+Problem: Multiple range queries on intervals with updates
+Why Sweep Line: Process queries in order, maintain interval contributions
+```
+
+---
+
+## Missing Patterns from Original Doc
+
+### Pattern 8: "Interval Scheduling/Greedy"
+**Keywords**: "maximum meetings", "non-overlapping", "activity selection"
+**Intuition**: Greedy choice - always pick interval with earliest end time
+
+```java
+// Template for maximum non-overlapping intervals
+public int maxEvents(int[][] intervals) {
+    Arrays.sort(intervals, (a, b) -> a[1] - b[1]); // Sort by END time
+    
+    int count = 0;
+    int lastEnd = Integer.MIN_VALUE;
+    
+    for (int[] interval : intervals) {
+        if (interval[0] >= lastEnd) { // No overlap with last chosen
+            count++;
+            lastEnd = interval[1];
+        }
+    }
+    return count;
+}
+```
+
+**Example Problems**:
+- LeetCode 435 - Non-overlapping Intervals
+- LeetCode 452 - Minimum Number of Arrows to Burst Balloons
+- LeetCode 1353 - Maximum Number of Events That Can Be Attended
+
+---
+
+### Pattern 9: "Point Coverage/Line Sweep"
+**Keywords**: "cover all points", "minimum intervals", "point in intervals"
+**Intuition**: Find minimum intervals to cover all points, or check point coverage
+
+```java
+// Template for minimum intervals to cover points
+public int minIntervalsToCoverPoints(int[] points, int intervalSize) {
+    Arrays.sort(points);
+    
+    int count = 0;
+    int i = 0;
+    
+    while (i < points.length) {
+        int start = points[i];
+        count++;
+        
+        // Skip all points covered by interval [start, start + intervalSize]
+        while (i < points.length && points[i] <= start + intervalSize) {
+            i++;
+        }
+    }
+    return count;
+}
+```
+
+**Example Problems**:
+- LeetCode 1288 - Remove Covered Intervals
+- LeetCode 1024 - Video Stitching
+- LeetCode 757 - Set Intersection Size At Least Two
+
+---
+
+### Pattern 10: "Interval DP/Partition"
+**Keywords**: "minimum cost", "optimal partition", "break intervals"
+**Intuition**: Dynamic programming on intervals, usually with optimal substructure
+
+```java
+// Template for interval DP
+public int minCost(int[] arr) {
+    int n = arr.length;
+    int[][] dp = new int[n][n];
+    
+    // Length of subproblem
+    for (int len = 3; len <= n; len++) {
+        for (int i = 0; i <= n - len; i++) {
+            int j = i + len - 1;
+            dp[i][j] = Integer.MAX_VALUE;
+            
+            // Try all possible splits
+            for (int k = i + 1; k < j; k++) {
+                dp[i][j] = Math.min(dp[i][j], 
+                    dp[i][k] + dp[k][j] + cost(i, k, j));
+            }
+        }
+    }
+    return dp[0][n-1];
+}
+```
+
+**Example Problems**:
+- LeetCode 1547 - Minimum Cost to Cut a Stick
+- LeetCode 1000 - Minimum Cost to Merge Stones
+- LeetCode 312 - Burst Balloons
+
+---
+
+### Pattern 11: "Coordinate Compression + Intervals"
+**Keywords**: "large coordinates", "sparse intervals", "compress range"
+**Intuition**: Map large coordinates to smaller range, then apply interval techniques
+
+```java
+// Template for coordinate compression
+public void coordinateCompression(int[][] intervals) {
+    Set<Integer> coords = new HashSet<>();
+    
+    // Collect all coordinates
+    for (int[] interval : intervals) {
+        coords.add(interval[0]);
+        coords.add(interval[1]);
+        coords.add(interval[1] + 1); // Important for range queries
+    }
+    
+    List<Integer> sorted = new ArrayList<>(coords);
+    Collections.sort(sorted);
+    
+    // Create mapping
+    Map<Integer, Integer> compress = new HashMap<>();
+    for (int i = 0; i < sorted.size(); i++) {
+        compress.put(sorted.get(i), i);
+    }
+    
+    // Use compressed coordinates
+    for (int[] interval : intervals) {
+        int start = compress.get(interval[0]);
+        int end = compress.get(interval[1]);
+        // Process with compressed coordinates
+    }
+}
+```
+
+**Example Problems**:
+- LeetCode 850 - Rectangle Area II
+- LeetCode 391 - Perfect Rectangle
+- LeetCode 699 - Falling Squares
+
+---
+
+## Complete Pattern Decision Tree
+
+```
+Interval Problem
+├── Single List Operations
+│   ├── Overlapping? → Pattern 1 (Merge)
+│   ├── Insert new? → Pattern 2 (Insert)
+│   └── Remove overlaps? → Pattern 6 (Remove)
+│
+├── Resource/Concurrency
+│   ├── Max concurrent? → Pattern 3 (Events)
+│   ├── Min resources? → Pattern 4 (Heap)
+│   └── Max non-overlapping? → Pattern 7 (Greedy)
+│
+├── Two Lists
+│   ├── Find intersections? → Pattern 5 (Two Pointers)
+│   └── Coverage problems? → Pattern 8 (Point Coverage)
+│
+├── Multiple Queries
+│   ├── Process in order? → Sweep Line + Data Structure
+│   ├── Large coordinates? → Pattern 10 (Coordinate Compression)
+│   └── Optimal partition? → Pattern 9 (Interval DP)
+│
+└── Complex Geometry
+    ├── 2D rectangles? → Sweep Line + Segment Tree
+    ├── Skyline? → Sweep Line + Heap
+    └── Area calculations? → Coordinate Compression + Sweep Line
+```
+
+---
+
+## Advanced Pattern Combinations
+
+### Sweep Line + Segment Tree
+**Use when**: Range updates/queries on intervals during sweep
+**Example**: Rectangle area with overlaps
+
+### Sweep Line + Coordinate Compression
+**Use when**: Large coordinate space with sparse intervals
+**Example**: Skyline with coordinates up to 10^9
+
+### Interval DP + Memoization
+**Use when**: Optimal interval partitioning with overlapping subproblems
+**Example**: Minimum cost to cut stick
+
+### Two Pointers + Sliding Window on Intervals
+**Use when**: Find intervals satisfying window properties
+**Example**: Intervals with sum in range [target-k, target+k]
+
+---
+
+## Pattern Recognition Quick Reference
+
+| Problem Type | Pattern | Key Indicators |
+|--------------|---------|----------------|
+| Merge overlapping | Pattern 1 | "merge", "combine" |
+| Insert maintaining order | Pattern 2 | "insert", "add" |
+| Max concurrent | Pattern 3 | "maximum overlap", "peak" |
+| Min resources | Pattern 4 | "minimum rooms", "scheduling" |
+| Two list intersection | Pattern 5 | "intersection", sorted lists |
+| Remove overlaps | Pattern 6 | "remove", "non-overlapping" |
+| Max non-overlapping | Pattern 7 | "maximum meetings", "activity" |
+| Point coverage | Pattern 8 | "cover points", "minimum intervals" |
+| Optimal partition | Pattern 9 | "minimum cost", "break" |
+| Large coordinates | Pattern 10 | "coordinates up to 10^9", sparse |
+| Multiple queries | Sweep Line | "Q queries", process in order |
+
+
 ## Decision Tree for Interval Problems
 
 1. **Am I merging overlapping intervals?** → Pattern 1 (Sort by start, merge consecutive)

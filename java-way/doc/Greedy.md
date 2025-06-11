@@ -1,51 +1,62 @@
-# Understanding Greedy Algorithm Pattern
+# Complete Greedy Algorithm Mastery Guide
 
-## What is a Greedy Algorithm?
+## Overview
+This comprehensive guide covers all greedy patterns needed for LeetCode 150 and interview success, from basic to advanced patterns with complete implementation strategies.
 
-A greedy algorithm makes the locally optimal choice at each step, hoping to find a global optimum. The key insight is that for certain problems, making the best immediate choice leads to the best overall solution.
+---
 
-**Core Principle**: At each step, choose the option that looks best right now, without considering future consequences.
-
-## The Greedy Choice Property
-
-For a greedy algorithm to work, the problem must have the **greedy choice property**:
-- A globally optimal solution can be arrived at by making locally optimal choices
-- The choice made at each step is never reconsidered
-
-## Common Greedy Algorithm Patterns
+## Core Greedy Patterns
 
 ### Pattern 1: Activity Selection / Interval Scheduling
 **When to use**: Selecting maximum number of non-overlapping intervals
-
 **Key Insight**: Always pick the activity that finishes earliest
+**Time Complexity**: O(n log n) for sorting + O(n) for processing
+**Space Complexity**: O(1) to O(n) depending on implementation
 
 ```java
-// Meeting Rooms II - Minimum rooms needed
-int minMeetingRooms(int[][] intervals) {
-    // Greedy choice: Always assign meeting to the room that frees up earliest
-    PriorityQueue<Integer> heap = new PriorityQueue<>(); // min heap of end times
-    Arrays.sort(intervals, (a, b) -> a[0] - b[0]); // Sort by start time
+// Template for Interval Problems
+int solveIntervalProblem(int[][] intervals) {
+    if (intervals.length == 0) return 0;
     
-    for (int[] interval : intervals) {
-        if (!heap.isEmpty() && heap.peek() <= interval[0]) {
-            heap.poll(); // Reuse room
+    // Sort by end time for activity selection
+    Arrays.sort(intervals, (a, b) -> a[1] - b[1]);
+    
+    int count = 1; // or 0 depending on problem
+    int lastEnd = intervals[0][1];
+    
+    for (int i = 1; i < intervals.length; i++) {
+        if (intervals[i][0] >= lastEnd) {
+            count++;
+            lastEnd = intervals[i][1];
         }
-        heap.offer(interval[1]); // Schedule meeting end time
     }
-    return heap.size();
+    return count;
 }
 ```
 
-### Pattern 2: Fractional Knapsack
-**When to use**: Maximizing value with weight constraints, items can be fractional
+**LeetCode Problems:**
+- **Easy**: None directly
+- **Medium**: 435 (Non-overlapping Intervals), 452 (Minimum Number of Arrows), 253 (Meeting Rooms II)
+- **Hard**: None directly
 
-**Key Insight**: Always pick items with highest value-to-weight ratio first
+**Key Insights:**
+- Sort by end time for maximum selections
+- Sort by start time for minimum resources
+- Use heap for tracking multiple resources
+
+---
+
+### Pattern 2: Fractional/Greedy Knapsack
+**When to use**: Maximizing value with constraints, can take fractions
+**Key Insight**: Always pick highest value-to-weight ratio first
+**Time Complexity**: O(n log n)
+**Space Complexity**: O(1)
 
 ```java
-// Fractional Knapsack
-double fractionalKnapsack(Item[] items, int capacity) {
-    // Greedy choice: Pick items with highest value/weight ratio
-    Arrays.sort(items, (a, b) -> Double.compare(b.value/b.weight, a.value/a.weight));
+// Template for Greedy Selection by Ratio
+double maximizeValue(Item[] items, int capacity) {
+    Arrays.sort(items, (a, b) -> 
+        Double.compare(b.value/b.weight, a.value/a.weight));
     
     double totalValue = 0;
     for (Item item : items) {
@@ -61,17 +72,24 @@ double fractionalKnapsack(Item[] items, int capacity) {
 }
 ```
 
-### Pattern 3: Huffman Coding / Merge Operations
-**When to use**: Minimizing total cost when combining elements
+**LeetCode Problems:**
+- **Easy**: 455 (Assign Cookies)
+- **Medium**: 1029 (Two City Scheduling), 621 (Task Scheduler)
+- **Hard**: None directly
 
-**Key Insight**: Always combine the two smallest elements first
+---
+
+### Pattern 3: Huffman Coding / Merge Operations
+**When to use**: Minimizing cost when combining elements
+**Key Insight**: Always combine two smallest elements
+**Time Complexity**: O(n log n)
+**Space Complexity**: O(n)
 
 ```java
-// Minimum Cost to Connect Sticks
-int connectSticks(int[] sticks) {
-    // Greedy choice: Always combine two shortest sticks
+// Template for Minimum Cost Merging
+int minimizeCost(int[] elements) {
     PriorityQueue<Integer> pq = new PriorityQueue<>();
-    for (int stick : sticks) pq.offer(stick);
+    for (int element : elements) pq.offer(element);
     
     int totalCost = 0;
     while (pq.size() > 1) {
@@ -85,156 +103,473 @@ int connectSticks(int[] sticks) {
 }
 ```
 
+**LeetCode Problems:**
+- **Easy**: None directly
+- **Medium**: 1167 (Minimum Cost to Connect Sticks)
+- **Hard**: None in LeetCode 150
+
+---
+
 ### Pattern 4: Two Pointers Greedy
 **When to use**: Pairing elements optimally from both ends
-
-**Key Insight**: Use two pointers to make greedy choices from both ends
+**Key Insight**: Move pointer that gives better potential
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
 
 ```java
-// Container With Most Water
-int maxArea(int[] height) {
-    // Greedy choice: Always move the pointer with smaller height
-    int left = 0, right = height.length - 1;
-    int maxWater = 0;
+// Template for Two Pointer Greedy
+int twoPointerGreedy(int[] arr) {
+    int left = 0, right = arr.length - 1;
+    int result = 0;
     
     while (left < right) {
-        int water = Math.min(height[left], height[right]) * (right - left);
-        maxWater = Math.max(maxWater, water);
+        // Calculate current result
+        int current = calculateResult(arr[left], arr[right], right - left);
+        result = Math.max(result, current);
         
-        // Greedy: Move the shorter line
-        if (height[left] < height[right]) {
+        // Greedy choice: move pointer that might give better result
+        if (shouldMoveLeft(arr[left], arr[right])) {
             left++;
         } else {
             right--;
         }
     }
-    return maxWater;
+    return result;
 }
 ```
+
+**LeetCode Problems:**
+- **Easy**: None directly
+- **Medium**: 11 (Container With Most Water), 1793 (Maximum Score of Good Subarray)
+- **Hard**: 42 (Trapping Rain Water)
+
+---
 
 ### Pattern 5: Sorting-Based Greedy
-**When to use**: When optimal ordering reveals the greedy choice
-
-**Key Insight**: Sort by some criteria, then make greedy choices in that order
+**When to use**: When optimal ordering reveals greedy choice
+**Key Insight**: Sort first, then process in optimal order
+**Time Complexity**: O(n log n)
+**Space Complexity**: O(1) to O(n)
 
 ```java
-// Non-overlapping Intervals - Remove minimum intervals
-int eraseOverlapIntervals(int[][] intervals) {
-    // Greedy choice: Keep intervals that end earliest
-    Arrays.sort(intervals, (a, b) -> a[1] - b[1]); // Sort by end time
+// Template for Sorting-Based Greedy
+int sortingBasedGreedy(int[][] items) {
+    // Choose sorting criteria based on problem
+    Arrays.sort(items, (a, b) -> {
+        // Common sorting strategies:
+        // 1. By end time: a[1] - b[1]
+        // 2. By start time: a[0] - b[0]
+        // 3. By ratio: compare ratios
+        // 4. By difference: (a[0] - a[1]) - (b[0] - b[1])
+        return a[1] - b[1]; // example
+    });
     
-    int count = 0;
-    int end = Integer.MIN_VALUE;
-    
-    for (int[] interval : intervals) {
-        if (interval[0] >= end) {
-            end = interval[1]; // Keep this interval
-        } else {
-            count++; // Remove this interval
+    int result = 0;
+    for (int[] item : items) {
+        // Make greedy choice based on sorted order
+        if (isValidChoice(item)) {
+            result += processItem(item);
         }
     }
-    return count;
+    return result;
 }
 ```
 
-## How to Identify Greedy Problems
+**LeetCode Problems:**
+- **Easy**: 455 (Assign Cookies)
+- **Medium**: 435 (Non-overlapping Intervals), 452 (Minimum Number of Arrows)
+- **Hard**: None directly
 
-### 1. **Optimization Keywords**
-- "Maximum/Minimum number of..."
-- "Optimal arrangement/assignment..."
-- "Least/Most efficient way..."
+---
 
-### 2. **Problem Characteristics**
-- **Local choices affect global outcome**: Each decision impacts the final result
-- **Irreversible decisions**: Once you make a choice, you don't reconsider it
-- **Sorting often helps**: Many greedy problems involve sorting first
-- **Optimal substructure**: Optimal solution contains optimal solutions to subproblems
+### Pattern 6: **[MISSING] Stack-Based Greedy**
+**When to use**: Building optimal sequences or removing elements
+**Key Insight**: Maintain monotonic stack for optimal choices
+**Time Complexity**: O(n)
+**Space Complexity**: O(n)
 
-### 3. **Common Problem Types**
-- **Scheduling problems**: Meeting rooms, task scheduling
-- **Resource allocation**: Fractional knapsack, gas stations
-- **Graph problems**: Minimum spanning tree (Kruskal's, Prim's)
-- **String problems**: Huffman coding, parentheses matching
+```java
+// Template for Stack-Based Greedy
+String stackBasedGreedy(String s, int k) {
+    Stack<Character> stack = new Stack<>();
+    int toRemove = k;
+    
+    for (char c : s.toCharArray()) {
+        // Remove elements that make current choice suboptimal
+        while (!stack.isEmpty() && toRemove > 0 && 
+               shouldRemove(stack.peek(), c)) {
+            stack.pop();
+            toRemove--;
+        }
+        stack.push(c);
+    }
+    
+    // Remove remaining elements if needed
+    while (toRemove > 0) {
+        stack.pop();
+        toRemove--;
+    }
+    
+    return buildResult(stack);
+}
+```
 
-## Developing Your Greedy Intuition
+**LeetCode Problems:**
+- **Easy**: None
+- **Medium**: 402 (Remove K Digits), 316 (Remove Duplicate Letters), 1081 (Smallest Subsequence)
+- **Hard**: None in LeetCode 150
 
-### Step 1: Identify the Greedy Choice
-Ask yourself: "What is the most obvious 'best' choice at each step?"
+---
 
-Examples:
-- **Activity Selection**: Choose activity that ends earliest
-- **Fractional Knapsack**: Choose item with highest value/weight ratio
-- **Dijkstra's Algorithm**: Choose vertex with smallest distance
-- **Huffman Coding**: Combine two nodes with smallest frequency
+### Pattern 7: **[MISSING] Jump/Reach Greedy**
+**When to use**: Determining reachability or minimum steps
+**Key Insight**: Track furthest reachable position
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
 
-### Step 2: Prove the Greedy Choice is Safe
-You need to prove that making the greedy choice doesn't prevent finding an optimal solution.
+```java
+// Template for Jump Problems
+boolean canReach(int[] nums) {
+    int maxReach = 0;
+    for (int i = 0; i < nums.length; i++) {
+        if (i > maxReach) return false; // Can't reach this position
+        maxReach = Math.max(maxReach, i + nums[i]);
+        if (maxReach >= nums.length - 1) return true;
+    }
+    return maxReach >= nums.length - 1;
+}
 
-**Proof techniques**:
-1. **Exchange argument**: Show that any optimal solution can be modified to include the greedy choice without making it worse
-2. **Cut-and-paste**: Show that replacing a non-greedy choice with a greedy choice maintains optimality
+int minJumps(int[] nums) {
+    int jumps = 0, currentEnd = 0, farthest = 0;
+    
+    for (int i = 0; i < nums.length - 1; i++) {
+        farthest = Math.max(farthest, i + nums[i]);
+        
+        if (i == currentEnd) {
+            jumps++;
+            currentEnd = farthest;
+        }
+    }
+    return jumps;
+}
+```
 
-### Step 3: Show Optimal Substructure
-After making the greedy choice, the remaining problem should be a smaller instance of the same problem.
+**LeetCode Problems:**
+- **Easy**: None
+- **Medium**: 55 (Jump Game), 45 (Jump Game II)
+- **Hard**: None in LeetCode 150
 
-## Common Greedy Algorithm Categories
+---
 
-### 1. **Interval Problems**
-- **Pattern**: Sort intervals, then process greedily
-- **Examples**: Meeting Rooms, Non-overlapping Intervals, Merge Intervals
-- **Key insight**: Usually sort by start or end time
+### Pattern 8: **[MISSING] String Reconstruction Greedy**
+**When to use**: Building optimal strings with constraints
+**Key Insight**: Place characters to avoid violations
+**Time Complexity**: O(n log n) to O(n)
+**Space Complexity**: O(n)
 
-### 2. **Array Manipulation**
-- **Pattern**: Sort array, then make greedy choices
-- **Examples**: Assign Cookies, Two City Scheduling, Minimum Number of Arrows
-- **Key insight**: Sorting reveals the optimal order for decisions
+```java
+// Template for String Reconstruction
+String reconstructString(String s, int k) {
+    // Count frequencies
+    int[] count = new int[26];
+    for (char c : s.toCharArray()) {
+        count[c - 'a']++;
+    }
+    
+    // Use priority queue for optimal ordering
+    PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+    for (int i = 0; i < 26; i++) {
+        if (count[i] > 0) {
+            pq.offer(new int[]{i, count[i]});
+        }
+    }
+    
+    StringBuilder result = new StringBuilder();
+    Queue<int[]> waitQueue = new LinkedList<>();
+    
+    while (!pq.isEmpty()) {
+        int[] current = pq.poll();
+        result.append((char)(current[0] + 'a'));
+        current[1]--;
+        
+        waitQueue.offer(current);
+        
+        if (waitQueue.size() < k) continue;
+        
+        int[] front = waitQueue.poll();
+        if (front[1] > 0) {
+            pq.offer(front);
+        }
+    }
+    
+    return result.length() == s.length() ? result.toString() : "";
+}
+```
 
-### 3. **String Problems**
-- **Pattern**: Process characters greedily based on some criteria
-- **Examples**: Remove K Digits, Reorganize String, Valid Parenthesis String
-- **Key insight**: Often involves maintaining some invariant while processing
+**LeetCode Problems:**
+- **Easy**: None
+- **Medium**: 621 (Task Scheduler), 767 (Reorganize String)
+- **Hard**: None in LeetCode 150
 
-### 4. **Graph Problems**
-- **Pattern**: Always choose the "best" edge or vertex available
-- **Examples**: Minimum Spanning Tree, Shortest Path, Network Flow
-- **Key insight**: Local optimality leads to global optimality
+---
 
-### 5. **Mathematical Problems**
-- **Pattern**: Use mathematical properties to determine greedy choice
-- **Examples**: Jump Game, Gas Station, Candy Distribution
-- **Key insight**: Mathematical insight reveals why greedy works
+### Pattern 9: **[MISSING] Parentheses/Bracket Greedy**
+**When to use**: Balancing or validating nested structures
+**Key Insight**: Track balance and make greedy corrections
+**Time Complexity**: O(n)
+**Space Complexity**: O(1)
 
-## When Greedy Doesn't Work
+```java
+// Template for Parentheses Problems
+int minParenthesesOperations(String s) {
+    int balance = 0; // track current balance
+    int operations = 0;
+    
+    for (char c : s.toCharArray()) {
+        if (c == '(') {
+            balance++;
+        } else if (c == ')') {
+            if (balance > 0) {
+                balance--;
+            } else {
+                operations++; // need to add '(' or remove ')'
+            }
+        }
+    }
+    
+    // Add remaining unmatched '('
+    operations += balance;
+    return operations;
+}
+```
 
-### Classic Counter-examples:
-1. **0/1 Knapsack**: Can't break items, so greedy by value/weight ratio fails
-2. **Longest Path**: Greedy shortest path algorithms don't work for longest path
-3. **Traveling Salesman**: Nearest neighbor heuristic doesn't guarantee optimality
+**LeetCode Problems:**
+- **Easy**: 20 (Valid Parentheses)
+- **Medium**: 678 (Valid Parenthesis String), 921 (Minimum Add to Make Parentheses Valid)
+- **Hard**: None in LeetCode 150
 
-### How to Recognize When Greedy Fails:
-1. **Try small examples**: If greedy fails on small cases, it won't work
-2. **Look for dependencies**: If future choices depend heavily on current choices
-3. **Check for counterexamples**: Try to construct cases where greedy fails
+---
 
-## Debugging Greedy Solutions
+## Implementation Strategies
 
-### Common Issues:
-1. **Wrong sorting criteria**: The greedy choice isn't actually optimal
-2. **Missing edge cases**: Algorithm works for general case but fails on boundaries
-3. **Incorrect greedy choice**: The locally optimal choice isn't globally optimal
+### 1. **Sorting Strategy Selection**
+```java
+// By end time - for activity selection
+Arrays.sort(intervals, (a, b) -> a[1] - b[1]);
 
-### Debugging Process:
-1. **Verify the greedy choice**: Is your local optimality criterion correct?
-2. **Test on small examples**: Walk through your algorithm step by step
-3. **Check edge cases**: Empty input, single element, all elements same
-4. **Prove correctness**: Can you prove why the greedy choice works?
+// By start time - for resource allocation
+Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
 
-## Time Complexity Patterns
+// By ratio - for knapsack-like problems
+Arrays.sort(items, (a, b) -> Double.compare(b.value/b.weight, a.value/a.weight));
 
-Greedy algorithms are usually efficient:
-- **Sorting-based**: O(n log n) due to sorting, then O(n) for greedy choices
-- **Heap-based**: O(n log n) for operations involving priority queues
-- **Linear scan**: O(n) when no sorting is needed
-- **Graph algorithms**: O(E log V) for algorithms like Dijkstra's
+// By difference - for two-choice problems
+Arrays.sort(costs, (a, b) -> (a[0] - a[1]) - (b[0] - b[1]));
+```
 
-The efficiency comes from making each decision exactly once, without backtracking or reconsidering previous choices.
+### 2. **Data Structure Selection**
+- **PriorityQueue**: For always accessing min/max element
+- **Stack**: For maintaining monotonic sequences
+- **Two Pointers**: For pairing from both ends
+- **HashMap**: For frequency counting and tracking
+
+### 3. **Proof Strategy**
+1. **Exchange Argument**: Show any optimal solution can include greedy choice
+2. **Optimal Substructure**: Remaining problem has same structure
+3. **Contradiction**: Assume greedy is wrong, derive contradiction
+
+---
+
+## Pattern Recognition Decision Tree
+
+```
+Start with Problem
+│
+├─ Involves intervals/scheduling?
+│  ├─ Yes → Use Activity Selection Pattern
+│  └─ No → Continue
+│
+├─ Involves pairing elements optimally?
+│  ├─ Yes → Use Two Pointers Greedy
+│  └─ No → Continue
+│
+├─ Involves combining/merging elements?
+│  ├─ Yes → Use Huffman/Merge Pattern
+│  └─ No → Continue
+│
+├─ Involves building sequences optimally?
+│  ├─ Yes → Check if stack-based or string reconstruction
+│  └─ No → Continue
+│
+├─ Involves movement/reachability?
+│  ├─ Yes → Use Jump/Reach Pattern
+│  └─ No → Continue
+│
+├─ Involves balancing structures?
+│  ├─ Yes → Use Parentheses Pattern
+│  └─ No → Continue
+│
+└─ Default → Use Sorting-Based Greedy
+```
+
+---
+
+## LeetCode 150 Problems Categorized
+
+### **Easy Problems (5 problems)**
+1. **455. Assign Cookies** - Sorting-Based Greedy
+2. **20. Valid Parentheses** - Parentheses Pattern
+3. **121. Best Time to Buy and Sell Stock** - Simple Greedy
+4. **122. Best Time to Buy and Sell Stock II** - Transaction Greedy
+5. **392. Is Subsequence** - Two Pointers Greedy
+
+### **Medium Problems (15 problems)**
+1. **11. Container With Most Water** - Two Pointers Greedy
+2. **45. Jump Game II** - Jump/Reach Greedy
+3. **55. Jump Game** - Jump/Reach Greedy
+4. **134. Gas Station** - Circular Greedy
+5. **135. Candy** - Two-Pass Greedy
+6. **402. Remove K Digits** - Stack-Based Greedy
+7. **435. Non-overlapping Intervals** - Activity Selection
+8. **452. Minimum Number of Arrows** - Activity Selection
+9. **621. Task Scheduler** - String Reconstruction
+10. **678. Valid Parenthesis String** - Parentheses Pattern
+11. **763. Partition Labels** - Greedy Partitioning
+12. **767. Reorganize String** - String Reconstruction
+13. **921. Minimum Add to Make Parentheses Valid** - Parentheses Pattern
+14. **1029. Two City Scheduling** - Sorting-Based Greedy
+15. **1793. Maximum Score of Good Subarray** - Two Pointers Greedy
+
+### **Hard Problems (3 problems)**
+1. **42. Trapping Rain Water** - Two Pointers/Stack Greedy
+2. **84. Largest Rectangle in Histogram** - Stack-Based Greedy
+3. **316. Remove Duplicate Letters** - Stack-Based Greedy
+
+---
+
+## Additional Interview-Frequent Problems
+
+### **Medium (Additional)**
+- **253. Meeting Rooms II** - Activity Selection with Heap
+- **406. Queue Reconstruction by Height** - Sorting-Based Greedy
+- **502. IPO** - Greedy with Heap
+- **630. Course Schedule III** - Activity Selection Variant
+- **659. Split Array into Consecutive Subsequences** - Greedy Grouping
+- **738. Monotone Increasing Digits** - Digit Greedy
+- **846. Hand of Straights** - Greedy Grouping
+- **870. Advantage Shuffle** - Sorting-Based Greedy
+- **881. Boats to Save People** - Two Pointers Greedy
+- **1024. Video Stitching** - Activity Selection
+
+### **Hard (Additional)**
+- **218. The Skyline Problem** - Sweep Line Greedy
+- **358. Rearrange String k Distance Apart** - String Reconstruction
+- **407. Trapping Rain Water II** - Greedy with Heap
+- **517. Super Washing Machines** - Multi-source Greedy
+- **546. Remove Boxes** - Advanced Greedy (actually DP)
+
+---
+
+## Common Mistakes and Tips
+
+### **Mistake 1: Wrong Sorting Criteria**
+```java
+// WRONG: Sorting by start time for activity selection
+Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+
+// CORRECT: Sort by end time
+Arrays.sort(intervals, (a, b) -> a[1] - b[1]);
+```
+
+### **Mistake 2: Not Handling Edge Cases**
+```java
+// Always check empty arrays
+if (arr.length == 0) return 0;
+
+// Handle single element
+if (arr.length == 1) return handleSingleElement(arr[0]);
+```
+
+### **Mistake 3: Incorrect Greedy Choice**
+```java
+// For Two City Scheduling - WRONG approach
+Arrays.sort(costs, (a, b) -> a[0] - b[0]);
+
+// CORRECT: Sort by difference
+Arrays.sort(costs, (a, b) -> (a[0] - a[1]) - (b[0] - b[1]));
+```
+
+### **Mistake 4: Forgetting to Prove Greedy Works**
+- Always verify with small examples
+- Check if local optimum leads to global optimum
+- Look for counterexamples
+
+### **Pro Tips:**
+1. **Pattern Recognition**: Learn to identify sorting criteria quickly
+2. **Edge Cases**: Always test with [], [x], [x,x], and boundary values
+3. **Complexity**: Most greedy solutions are O(n log n) due to sorting
+4. **Validation**: If greedy fails on small examples, it won't work
+
+---
+
+## Template Selection Quick Reference
+
+| Problem Type | Template | Key Insight |
+|--------------|----------|-------------|
+| **Intervals** | Activity Selection | Sort by end time |
+| **Pairing** | Two Pointers | Move pointer with better potential |
+| **Merging** | Huffman/Heap | Combine smallest elements |
+| **Sequences** | Stack-Based | Maintain monotonic property |
+| **Jumping** | Jump/Reach | Track furthest reachable |
+| **Strings** | Reconstruction | Use frequency and constraints |
+| **Brackets** | Parentheses | Track balance |
+| **General** | Sorting-Based | Find optimal ordering |
+
+---
+
+## Complexity Analysis Patterns
+
+### **Time Complexities:**
+- **Sorting-based**: O(n log n)
+- **Heap-based**: O(n log n)
+- **Two Pointers**: O(n)
+- **Stack-based**: O(n)
+- **Simple Greedy**: O(n)
+
+### **Space Complexities:**
+- **In-place sorting**: O(1)
+- **Heap operations**: O(n)
+- **Stack operations**: O(n)
+- **Two pointers**: O(1)
+
+### **Optimization Tips:**
+1. Avoid unnecessary data structures
+2. Use primitive arrays when possible
+3. Consider in-place modifications
+4. Optimize sorting when data has special properties
+
+---
+
+## Interview Strategy
+
+### **Step 1: Pattern Recognition (30 seconds)**
+- Identify keywords: "maximum", "minimum", "optimal"
+- Look for sorting opportunities
+- Check if greedy choice is obvious
+
+### **Step 2: Verify Greedy Works (1 minute)**
+- Test on small examples
+- Verify greedy choice property
+- Check for counterexamples
+
+### **Step 3: Implementation (5-10 minutes)**
+- Choose appropriate template
+- Handle edge cases
+- Optimize if needed
+
+### **Step 4: Testing (2 minutes)**
+- Test edge cases
+- Verify time/space complexity
+- Walk through example
+
+This comprehensive guide covers all greedy patterns needed for LeetCode 150 and interview success. Each pattern includes templates, complexity analysis, and specific problem mappings to ensure you're fully prepared.
