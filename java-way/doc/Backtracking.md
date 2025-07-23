@@ -95,9 +95,6 @@ Output: [], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]
 - `78`. Subsets ⭐
 - `90`. Subsets II (with duplicates)
 - `77`. Combinations
-- `39`. Combination Sum ⭐
-- `40`. Combination Sum II
-- `216`. Combination Sum III
 
 **Key Insights to Remember**:
 - Use `start` index to avoid duplicates in combinations
@@ -130,10 +127,10 @@ void enumerate(int[] nums, int index, List<Integer> current, List<List<Integer>>
 ```
 
 **LeetCode Problems**:
-- 78. Subsets ⭐
-- 90. Subsets II (with duplicates)
-- 77. Combinations
-- 17. Letter Combinations of Phone Number ⭐
+- `78`. Subsets ⭐
+- `90`. Subsets II (with duplicates)
+- `77`. Combinations
+- `17`. Letter Combinations of Phone Number ⭐
 
 **Key Insights**:
 - Two choices at each step: include or exclude
@@ -592,8 +589,8 @@ void buildExpression(String num, int index, long currentNum, long prevNum,
 ```
 
 **LeetCode Problems**:
-- 282. Expression Add Operators
-- 241. Different Ways to Add Parentheses (Divide & Conquer better)
+- `282`. Expression Add Operators
+- `241`. Different Ways to Add Parentheses (Divide & Conquer better)
 
 **Key Insights**:
 - Handle operator precedence carefully
@@ -608,28 +605,28 @@ void buildExpression(String num, int index, long currentNum, long prevNum,
 
 ## LeetCode 150 Backtracking Problems:
 ⭐ **Core Problems (Must Master)**:
-- 17. Letter Combinations of Phone Number (Pattern 1)
-- 22. Generate Parentheses (Pattern 4)
-- 39. Combination Sum (Pattern 6)
-- 46. Permutations (Pattern 2)
-- 51. N-Queens (Pattern 5)
-- 78. Subsets (Pattern 1)
-- 79. Word Search (Pattern 5)
-- 93. Restore IP Addresses (Pattern 3)
-- 131. Palindrome Partitioning (Pattern 3)
+- `17`. Letter Combinations of Phone Number (Pattern 1)
+- `22`. Generate Parentheses (Pattern 4)
+- `39`. Combination Sum (Pattern 6)
+- `46`. Permutations (Pattern 2)
+- `51`. N-Queens (Pattern 5)
+- `78`. Subsets (Pattern 1)
+- `79`. Word Search (Pattern 5)
+- `93`. Restore IP Addresses (Pattern 3)
+- `131`. Palindrome Partitioning (Pattern 3)
 
 ## High-Frequency FAANG Interview Problems:
-- 37. Sudoku Solver (Pattern 5)
-- 40. Combination Sum II (Pattern 6)
-- 47. Permutations II (Pattern 2)
-- 77. Combinations (Pattern 1)
-- 90. Subsets II (Pattern 1)
-- 140. Word Break II (Pattern 3)
-- 212. Word Search II (Pattern 5)
-- 216. Combination Sum III (Pattern 6)
-- 282. Expression Add Operators (Pattern 8)
-- 332. Reconstruct Itinerary (Pattern 7)
-- 797. All Paths From Source to Target (Pattern 7)
+- `37`. Sudoku Solver (Pattern 5)
+- `40`. Combination Sum II (Pattern 6)
+- `47`. Permutations II (Pattern 2)
+- `77`. Combinations (Pattern 1)
+- `90`. Subsets II (Pattern 1)
+- `140`. Word Break II (Pattern 3)
+- `212`. Word Search II (Pattern 5)
+- `216`. Combination Sum III (Pattern 6)
+- `282`. Expression Add Operators (Pattern 8)
+- `332`. Reconstruct Itinerary (Pattern 7)
+- `797`. All Paths From Source to Target (Pattern 7)
 
 ---
 

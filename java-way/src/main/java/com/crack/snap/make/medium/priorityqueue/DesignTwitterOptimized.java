@@ -62,12 +62,12 @@ public class DesignTwitterOptimized {
         while (!maxHeap.isEmpty() && result.size() < 10) {
             var tweet = maxHeap.poll();
             result.add(tweet.tweetId);
-            int nextIndex = indexTracker.getOrDefault(userId, -1);
+            int nextIndex = indexTracker.getOrDefault(tweet.userId, -1);
 
             if (nextIndex >= 0) {
-                var tweets = userTweets.getOrDefault(userId, new ArrayList<>());
+                var tweets = userTweets.getOrDefault(tweet.userId, new ArrayList<>());
                 maxHeap.add(tweets.get(nextIndex));
-                indexTracker.put(userId, nextIndex - 1);
+                indexTracker.put(tweet.userId, nextIndex - 1);
             }
         }
         return result;

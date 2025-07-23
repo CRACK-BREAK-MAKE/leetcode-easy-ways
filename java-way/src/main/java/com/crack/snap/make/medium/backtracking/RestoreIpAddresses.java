@@ -26,6 +26,9 @@ public class RestoreIpAddresses {
 
         if (current.size() >= 4) return;
 
+        // Try all possible lengths for current part of (1-3 digits)
+        // meaning if start = 0, I can try for index 0, 1, 2. Similarly, if start = 2, I can try for 2, 3, 4
+        // so if start is i, I can try 3 digits less than i + 3 since they should be between [0 - 255]
         for (var end = start; end < s.length() && end < start + 3; end++) {
             var segment = s.substring(start, end + 1);
             if (isValidSegment(segment)) {

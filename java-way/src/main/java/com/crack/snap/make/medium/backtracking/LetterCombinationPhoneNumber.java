@@ -8,6 +8,18 @@ import java.util.List;
  */
 public class LetterCombinationPhoneNumber {
 
+    /**
+     * Time Complexity:
+     * Each digit can map to up to 4 letters at max (e.g., "wxyz").
+     * For a string of length n, there are 4^n possible combinations.
+     * The recursive function explores all these combinations, making the time complexity O(4^n).
+     *
+     * Space Complexity:
+     * The space complexity is O(n):
+     * The recursion depth is equal to the length of the input string n.
+     * The StringBuilder used for backtracking also takes O(n) space.
+     * Hence, the overall space complexity is O(n).
+     */
     public List<String> letterCombinations(String digits) {
         if (digits == null || digits.isEmpty()) {
             return List.of();

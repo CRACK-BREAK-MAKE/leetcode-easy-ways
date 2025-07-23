@@ -1,6 +1,7 @@
 package com.crack.snap.make.hard.backtracking;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -8,15 +9,26 @@ import java.util.List;
  */
 public class NQueens {
 
+    /**
+     * Time Complexity:
+     * The algorithm places queens row by row, and for each row, it checks all columns to find a safe position.
+     * The number of permutations of queens is n! (as each queen must be placed in a unique row and column).
+     * For each permutation, the isSafe method checks safety, which takes O(n) time.
+     * Therefore, the total time complexity is O(n * n!).
+     *
+     * Space Complexity:
+     * The space complexity is O(n * n):
+     * The board is a 2D array of size n * n.
+     * The recursion stack depth is O(n), but this is negligible compared to the board size.
+     * Hence, the overall space complexity is O(n * n).
+     */
     public List<List<String>> solveNQueensWithoutSpace(int n) {
         if (n <= 0) {
             return List.of();
         }
         var board = new String[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                board[i][j] = ".";
-            }
+        for (var row :  board) {
+            Arrays.fill(row, ".");
         }
         var result = new ArrayList<List<String>>();
         solveNQueensWithoutSpaceBacktracking(board, 0, result);
@@ -94,14 +106,12 @@ public class NQueens {
             return List.of();
         }
         var board = new String[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                board[i][j] = ".";
-            }
+        for (var row :  board) {
+            Arrays.fill(row, ".");
         }
         var col = new boolean[n];
         var mainDiagonal = new boolean[2 * n - 1]; // row + col
-        var antiDiagonal = new boolean[2 * n - 1]; // row - col + (n - 1)
+        var antiDiagonal = new boolean[2 * n - 1]; // row - col + (n - 1), -3 becomes 0, -2 becomes 1, -1 becomes 2, 0 becomes 3
         var result = new ArrayList<List<String>>();
         solveNQueensWithSpaceBacktracking(board, 0, result, col, mainDiagonal, antiDiagonal);
         return result;

@@ -8,6 +8,21 @@ import java.util.List;
  */
 public class Permutations {
 
+    /**
+     * We know nPr = n! / (n-r)!, here r is equal n so npn is !n
+     *
+     * Time Complexity:
+     * The time complexity of the permute method is O(n * n!) Here's why:
+     * The algorithm generates all permutations of the input array, and the total number of permutations for an array of size n is n!.
+     * For each permutation, the algorithm iterates through the array to construct it, which takes O(n) time.
+     * Therefore, the total time complexity is O(n * n!).
+     *
+     * Space Complexity:
+     * The space complexity is O(n):
+     * The recursion depth is equal to the size of the input array, which is n.
+     * The current list and used array also take O(n) space.
+     * Hence, the overall space complexity is O(n).
+     */
     public List<List<Integer>> permute(int[] nums) {
         if (nums == null || nums.length == 0) {
             return List.of();

@@ -42,32 +42,40 @@ public class GenerateParentheses {
      * 5. Recursive Problem Solving:
      * If the problem can be broken down into smaller subproblems that can be solved recursively, backtracking is a good fit.
      *
-     * 6. Exponential Time Complexity:
-     * Problems that have an exponential number of possible solutions often use backtracking to explore all possibilities efficiently.
-     * @param n
-     * @return
+     * Time Complexity:
+     * For n pairs of parentheses, the recursion explores all possible combinations of opening and closing parentheses.
+     * At each step, there are 2 choices (open or close), and the recursion depth is 2n (since we need to place n open and n close parentheses).
+     * Therefore, the total number of combinations is O(2^(2n)).
+     *
+     * Space Complexity:
+     * The space complexity is O(n):
+     * The recursion depth is equal to the number of pairs n.
+     * The StringBuilder used for backtracking also takes O(n) space.
+     * Hence, the overall space complexity is O(n).
      */
     public List<String> generateParenthesis(int n) {
         if (n <= 0) {
             return List.of();
         }
         List<String> result = new java.util.ArrayList<>();
-        generateParenthesesRecursively(0, 0 , n, result, "");
+        generateParenthesesRecursively(n ,0, 0 , result, new StringBuilder());
         return result;
     }
 
-    private void generateParenthesesRecursively(int openCount, int closeCount, int totalLength, List<String> result, String subStr) {
-        if (subStr.length() == 2 * totalLength) {
-            result.add(subStr);
+    private void generateParenthesesRecursively(int n, int openCount, int closeCount, List<String> result, StringBuilder sb) {
+        if (sb.length() == 2 * n) {
+            result.add(sb.toString());
             return;
         }
 
-        if (openCount < totalLength) {
-            generateParenthesesRecursively(openCount + 1, closeCount,totalLength, result, subStr + "(");
+        if (openCount < n) {
+            generateParenthesesRecursively(n, openCount + 1, closeCount, result, sb.append("("));
+            sb.deleteCharAt(sb.length() - 1);
         }
 
         if (openCount > closeCount) {
-            generateParenthesesRecursively(openCount, closeCount + 1, totalLength, result, subStr + ")");
+            generateParenthesesRecursively(n, openCount, closeCount + 1, result, sb.append( ")"));
+            sb.deleteCharAt(sb.length() - 1);
         }
     }
 
