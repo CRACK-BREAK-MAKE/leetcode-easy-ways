@@ -3,78 +3,92 @@ package com.crack.snap.make.easy.dp;
 /**
  * Problem: You are climbing a staircase. It takes n steps to reach the top.
  * Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
- *
- * 1. Why "Climbing Stairs" is a DP Problem (The Four-Question Test)
- *   The problem asks for the number of distinct ways to climb to the top of n stairs if you can climb either 1 or 2 steps at a time.
- *
- *   This perfectly fits the criteria for Dynamic Programming:
- *   Can I make a choice? Yes, at each step, you can choose to climb either 1 stair or 2 stairs.
- *   Does this choice affect future choices? Yes, your choice of 1 or 2 steps directly impacts how many stairs remain to climb.
- *   Are there optimal subproblems? Yes, the total number of ways to reach n stairs is the sum of ways to reach n-1 stairs (then take 1 step) and ways to reach n-2 stairs (then take 2 steps). The solution for n is built from optimal solutions to smaller subproblems (n-1 and n-2).
- *   Are subproblems overlapping? Yes. For example, to find ways to reach stair 5, you need ways to reach stair 4 and stair 3. To find ways to reach stair 4, you need ways to reach stair 3 and stair 2. Notice that "ways to reach stair 3" is calculated twice, indicating overlapping subproblems.
- *   Since all four questions are "Yes", and keywords like "count ways" are present, this is definitely a DP problem.
- *
- * 2. Drafting the Solution (The Four-Step DP Solution Approach)
- * - Define the state: Let dp[i] represent the number of distinct ways to climb to the i-th stair. Our goal is to find dp[n].
- * - Find the recurrence relation: To reach stair i, you must have come from either stair i-1 (by taking one step) or
- *      stair i-2 (by taking two steps). The total ways to reach i is the sum of the ways to reach these previous stairs.
- *      $$ dp[i] = dp[i-1] + dp[i-2] $$
- * - Initialize base cases:
- *      dp[1] = 1 (Only one way to reach the first stair: one 1-step jump).
- *      dp[2] = 2 (Two ways to reach the second stair: 1+1 steps or one 2-step jump).
- * - Determine the order: We can solve this problem using both Top-Down (Memoization) or Bottom-Up (Tabulation) strategies.
- *      Since dp[i] depends on dp[i-1] and dp[i-2], we can process in increasing order of i for bottom-up, or
- *      use recursion with memoization for top-down.
+ * Constraints:
+ * 1 <= n <= 45
  *
  * @author Mohan Sharma
  */
 public class ClimbingStairs {
 
+
     /**
-     * We start from n and recursively break it down. We use a memo array to store the result of climbStairs(i) so
-     * we don't recompute it.
+     * Intuition:
+     * Think about the problem like this:
+     * How many ways can we reach the top (step n)?
+     * The final move must be either a 1-step jump or a 2-step jump.
+     * So, the total ways to reach step n is (Ways to reach step n-1) + (Ways to reach step n-2).
+     * This gives us a very clean recurrence relation: ways(n) = ways(n-1) + ways(n-2).
      *
-     * Time Complexity: O(n). Each subproblem from 1 to n is solved only once.
-     * Space Complexity: O(n). For the recursion stack and the memo array.
+     * Now, what are the base cases?
+     * ways(1): To reach step 1, there's only one way: (1). So ways(1) = 1.
+     * ways(2): To reach step 2, there are two ways: (1, 1) and (2). So ways(2) = 2.
+     *
+     * Time Complexity: O(2 ^ n)
+     * This is because for each step n, we make two recursive calls. This creates a recursion tree where the number of nodes
+     * roughly doubles with each level, leading to exponential growth. For example, to calculate climb(5),
+     * we calculate climb(3) twice, climb(2) three times, etc.
+     *
+     * Space Complexity: O(n), This is due to the maximum depth of the recursion stack, which can go up to n.
+     */
+    public int climbStairsBruteForce(int n) {
+        if (n <= 2) {
+            return n;
+        }
+        return climbStairsBacktracking(n);
+    }
+
+    private int climbStairsBacktracking(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            return 2;
+        }
+        // The number of ways is the sum of ways to get to the previous two steps.
+        return climbStairsBacktracking(n - 1) + climbStairsBacktracking(n - 2);
+    }
+
+    /**
+     * Time Complexity: O(n). Each subproblem from 1 to n is computed exactly once. All subsequent calls for that same number
+     * will be an O(1) lookup in the memo array.
+     * Space Complexity: O(n). We need O(n) space for the memo array and another O(n) for the recursion stack in the worst case. So, it's O(n).
      */
     public int climbStairsTopDown(int n) {
         if (n <= 2) {
-            return n; // Base cases: 1 way for 1 step, 2 ways for 2 steps
+            return n;
         }
-        return climbStairsMemoized(n, new int[n + 1]);
+        return climbStairsMemoization(n, new Integer[n + 1]);
     }
 
-    private int climbStairsMemoized(int n, int[] memo) {
-        if (n <= 2) {
-            return n; // Base cases: 1 way for 1 step, 2 ways for 2 steps
+    private int climbStairsMemoization(int n, Integer[] memo) {
+        if (n == 1) {
+            return 1;
         }
-        if (memo[n] != 0) {
-            return memo[n]; // Return cached result
+        if (n == 2) {
+            return 2;
         }
-        memo[n] = climbStairsMemoized(n - 1, memo) + climbStairsMemoized(n - 2, memo);
-        return memo[n];
+        if (memo[n] != null) {
+            return memo[n];
+        }
+        // The number of ways is the sum of ways to get to the previous two steps.
+        return memo[n] = climbStairsMemoization(n - 1, memo) + climbStairsMemoization(n - 2, memo);
     }
 
     /**
-     * We build the solution iteratively from the base cases up to n.
-     * This avoids recursion and uses a simple array to store intermediate results.
-     *
-     * Time Complexity: O(n). Each step from 1 to n is computed once.
-     * Space Complexity: O(n). For the dp array.
+     * Time Complexity: O(n). We iterate through a loop from 3 to n once.
+     * Space Complexity: O(n). We use an array of size n+1 to store our DP results.
      */
     public int climbStairsBottomUp(int n) {
         if (n <= 2) {
-            return n; // Base cases: 1 way for 1 step, 2 ways for 2 steps
+            return n;
         }
         var dp = new int[n + 1];
-        dp[1] = 1; // 1 way to climb 1 step
-        dp[2] = 2; // 2 ways to climb 2 steps
-
-        for (var i = 3; i <= n; i++) {
-            dp[i] = dp[i - 1] + dp[i - 2]; // Recurrence relation
+        dp[1] = 1; // base case there is one way to reach 0 from 1
+        dp[2] = 2; // there is 2 ways to reach 0 from 2
+        for (int i = 3; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
         }
-
-        return dp[n]; // Return the number of ways to climb n steps
+        return dp[n];
     }
 
     public  int climbStairsBottomUpSpaceOptimized(int n) {
@@ -94,6 +108,7 @@ public class ClimbingStairs {
 
     public static void main(String[] args) {
         var obj = new ClimbingStairs();
+        System.out.println("Brute Force Result for 5 steps: " + obj.climbStairsBruteForce(5));
         System.out.println("Top-Down (Memoization) Result for 5 steps: " + obj.climbStairsTopDown(5)); // Output: 8
         System.out.println("Bottom-Up (Tabulation) Result for 5 steps: " + obj.climbStairsBottomUp(5)); // Output: 8
         System.out.println("Bottom-Up (Space Optimized) Result for 5 steps: " + obj.climbStairsBottomUpSpaceOptimized(5)); // Output: 8

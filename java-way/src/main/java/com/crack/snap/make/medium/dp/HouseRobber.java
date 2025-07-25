@@ -32,26 +32,53 @@ import java.util.Arrays;
  */
 public class HouseRobber {
 
+
+    /**
+     * Time Complexity: O(2^n)
+     * Space Complexity: O(n)
+     */
+    public int robBruteForce(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        // State: Get maximum amount of money that can be accumulated from house 0 to n
+        return solveRobBruteForce(nums, nums.length - 1);
+    }
+
+    private int solveRobBruteForce(int[] nums, int houseNo) {
+        if (houseNo < 0) {
+            // No amount can be robbed from non-existent house, The robber has 0 amount before he starts the first house
+            return 0;
+        }
+        // decide to rob the current house, so the amount accumulated here will be the amount from (house - 2),
+        // since (house - 1) will be adjacent and cannot rob it plus current house amount
+        var robbHouse = solveRobBruteForce(nums, houseNo - 2) + nums[houseNo];
+        // decide to rob the current house, so the amount accumulated here will be the amount from (house - 1) plus 0
+        var skipHouse = solveRobBruteForce(nums, houseNo - 1);
+        return Math.max(robbHouse, skipHouse);
+    }
+
     /**
      * Time Complexity: O(n) - Each state solve(i) is computed only once.
      * Space Complexity: O(n) - For the recursion stack and memo array.
      */
     public int robTopDown(int[] nums) {
-        var memo = new int[nums.length + 1];
-        Arrays.fill(memo, -1); // to avoid TLE in memoization
-        return robMemoized(nums, nums.length - 1, memo);
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        return robMemoized(nums, nums.length - 1, new Integer[nums.length]);
     }
 
-    private int robMemoized(int[] nums, int index, int[] memo) {
-        if (index < 0) {
-            return 0; // No houses left to rob
+    private int robMemoized(int[] nums, int houseNo, Integer[] memo) {
+        if (houseNo < 0) {
+            return 0;
         }
-        if (memo[index] != -1) {
-            return memo[index]; // Return cached result
+        if (memo[houseNo] != null) {
+            return memo[houseNo]; // Return cached result
         }
-        var robHouse = robMemoized(nums, index - 2, memo) + nums[index];
-        var skipHouse = robMemoized(nums, index - 1, memo);
-        return memo[index] = Math.max(robHouse, skipHouse);
+        var robHouse = robMemoized(nums, houseNo - 2, memo) + nums[houseNo];
+        var skipHouse = robMemoized(nums, houseNo - 1, memo);
+        return memo[houseNo] = Math.max(robHouse, skipHouse);
     }
 
     /**
@@ -59,18 +86,28 @@ public class HouseRobber {
      * Space Complexity: O(n) - For the dp array.
      */
     public int robBottomUp(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
         var n = nums.length;
-        if (n == 0) return 0;
+        // if only 1 house, let's rob and return
         if (n == 1) return nums[0];
-        var dp = new int[n];
 
+        // var robHouse = robMemoized(nums, houseNo - 2, memo) + nums[houseNo];
+        // var skipHouse = robMemoized(nums, houseNo - 1, memo);
+        // Analyse for index 0
+        // var robHouse = 0 + nums[0], var skipHouse = 0 + 0 so for index 0, its max(nums[0], 0) = nums[0]
+        // Analyse for index 1
+        // var robHouse = 0 + nums[1], var skipHouse = robMemoized(nums, 0, memo) = nums[0] so for index 1, its max(nums[0], nums[1])
+
+        var dp = new int[n];
         dp[0] = nums[0];
         dp[1] = Math.max(nums[0], nums[1]);
 
-        for (var i = 2; i < n; i++) {
-            var robHouse = nums[i] + dp[i - 2];
-            var skipHouse = dp[i - 1];
-            dp[i] = Math.max(robHouse, skipHouse);
+        for (var houseNo = 2; houseNo < n; houseNo++) {
+            var robHouse = dp[houseNo - 2] + nums[houseNo];
+            var skipHouse = dp[houseNo - 1];
+            dp[houseNo] = Math.max(robHouse, skipHouse);
         }
         return dp[n - 1];
     }
@@ -80,30 +117,34 @@ public class HouseRobber {
      * Space Complexity: O(1) - We only use a few variables to store the state.
      */
     public int robOptimised(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
         var n = nums.length;
-        if (n == 0) return 0;
         if (n == 1) return nums[0];
 
-        var prevTwo = nums[0]; // Represents dp[i-2]
-        var prevOne = Math.max(nums[0], nums[1]); // Represents dp[i-1]
+        var minusTwo = nums[0];
+        var minusOne = Math.max(nums[0], nums[1]);
 
-        for (var i = 2; i < n; i++) {
-            var robHouse = nums[i] + prevTwo; // Rob current house
-            var skipHouse = prevOne; // Skip current house
-            var current = Math.max(robHouse, skipHouse); // Max of robbing or skipping
-            prevTwo = prevOne;
-            prevOne = current;
+        for (int houseNo = 2; houseNo < n; houseNo++) {
+            var robHouse = minusTwo + nums[houseNo];
+            var skipHouse = minusOne;
+            var currentRobbed = Math.max(robHouse, skipHouse);
+            minusTwo = minusOne;
+            minusOne = currentRobbed;
         }
-        return prevOne; // The last computed value is the maximum amount robbed
+        return minusOne;
     }
 
     public static void main(String[] args) {
         var obj = new HouseRobber();
-        System.out.println("Maximum amount robbed: " + obj.robTopDown(new int[]{2, 7, 9, 3, 1})); // Output: 12
-        System.out.println("Maximum amount robbed: " + obj.robTopDown(new int[]{1, 2, 3, 1})); // Output: 4
-        System.out.println("Maximum amount robbed: " + obj.robBottomUp(new int[]{2, 7, 9, 3, 1})); // Output: 12
-        System.out.println("Maximum amount robbed: " + obj.robBottomUp(new int[]{1, 2, 3, 1})); // Output: 4
-        System.out.println("Maximum amount robbed: " + obj.robOptimised(new int[]{2, 7, 9, 3, 1})); // Output: 12
-        System.out.println("Maximum amount robbed: " + obj.robOptimised(new int[]{1, 2, 3, 1})); // Output: 4
+        System.out.println("Maximum amount robbed Brute Force: " + obj.robBruteForce(new int[]{2, 7, 9, 3, 1})); // Output: 12
+        System.out.println("Maximum amount robbed Brute Force: " + obj.robBruteForce(new int[]{1, 2, 3, 1})); // Output: 4
+        System.out.println("Maximum amount robbed Top Down: " + obj.robTopDown(new int[]{2, 7, 9, 3, 1})); // Output: 12
+        System.out.println("Maximum amount robbed Top Down: " + obj.robTopDown(new int[]{1, 2, 3, 1})); // Output: 4
+        System.out.println("Maximum amount robbed Bottom Up: " + obj.robBottomUp(new int[]{2, 7, 9, 3, 1})); // Output: 12
+        System.out.println("Maximum amount robbed Bottom Up: " + obj.robBottomUp(new int[]{1, 2, 3, 1})); // Output: 4
+        System.out.println("Maximum amount robbed Space Optimized: " + obj.robOptimised(new int[]{2, 7, 9, 3, 1})); // Output: 12
+        System.out.println("Maximum amount robbed Space Optimized: " + obj.robOptimised(new int[]{1, 2, 3, 1})); // Output: 4
     }
 }

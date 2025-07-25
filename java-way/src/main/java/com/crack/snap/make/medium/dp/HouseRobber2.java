@@ -17,167 +17,121 @@ import java.util.Arrays;
 public class HouseRobber2 {
 
     /**
+     * Time Complexity: O(2^n)
+     * Space Complexity: O(n)
+     */
+    public int robBruteForce(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        return Math.max(solveRobBruteForce(nums, 0, nums.length - 2), solveRobBruteForce(nums, 1, nums.length - 1));
+    }
+
+    private int solveRobBruteForce(int[] nums, int startHouseNo, int endHouseNo) {
+        if (startHouseNo > endHouseNo) {
+            // No amount can be robbed from non-existent house, The robber has 0 amount before he starts the first house
+            return 0;
+        }
+        // decide to rob the current house, so the amount accumulated here will be the amount from (house - 2),
+        // since (house - 1) will be adjacent and cannot rob it plus current house amount
+        var robHouse = solveRobBruteForce(nums, startHouseNo,endHouseNo - 2) + nums[endHouseNo];
+        // decide to rob the current house, so the amount accumulated here will be the amount from (house - 1) plus 0
+        var skipHouse = solveRobBruteForce(nums, startHouseNo, endHouseNo - 1);
+        return Math.max(robHouse, skipHouse);
+    }
+
+    /**
      * Time Complexity: O(n) - Each state solve(i) is computed only once.
      * Space Complexity: O(n) - For the recursion stack and memo array.
      */
     public int robTopDown(int[] nums) {
-        var n = nums.length;
-        if (n == 0) {
-            return 0; // No houses to rob
+        if (nums == null || nums.length == 0) {
+            return 0;
         }
-        if (n == 1) {
-            return nums[0]; // Only one house to rob
-        }
-
-        var memo = new int[nums.length + 1];
-        Arrays.fill(memo, -1);
-        var firstOption = robMemoized(nums, 0, n - 2, memo); // Rob from first to second last
-
-        Arrays.fill(memo, -1); // Reset memo for the second option
-        var secondOption = robMemoized(nums, 1, n - 1, memo); // Rob from second to last
-
-        return Math.max(firstOption, secondOption);
+        return Math.max(robMemoized(nums, 0, nums.length - 2, new Integer[nums.length]), robMemoized(nums, 1, nums.length - 1, new Integer[nums.length]));
     }
 
-    private int robMemoized(int[] nums, int start, int end, int[] memo) {
-        if (end < start) {
-            return 0; // No houses to rob
+    private int robMemoized(int[] nums, int startHouseNo, int endHouseNo, Integer[] memo) {
+        if (startHouseNo > endHouseNo) {
+            // No amount can be robbed from non-existent house, The robber has 0 amount before he starts the first house
+            return 0;
         }
-        if (memo[end] != -1) {
-            return memo[end]; // Return cached result
+        if (memo[endHouseNo] != null) {
+            return memo[endHouseNo];
         }
-        var robHouse = nums[end] + robMemoized(nums, start, end - 2, memo);
-        var skipHouse = robMemoized(nums, start, end - 1, memo);
-        return memo[end] = Math.max(robHouse, skipHouse);
+        // decide to rob the current house, so the amount accumulated here will be the amount from (house - 2),
+        // since (house - 1) will be adjacent and cannot rob it plus current house amount
+        var robHouse = robMemoized(nums, startHouseNo,endHouseNo - 2, memo) + nums[endHouseNo];
+        // decide to rob the current house, so the amount accumulated here will be the amount from (house - 1) plus 0
+        var skipHouse = robMemoized(nums, startHouseNo, endHouseNo - 1, memo);
+        return memo[endHouseNo] = Math.max(robHouse, skipHouse);
     }
 
+    public int robBottomUp(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0]; // since only 1 house, It can't be a neighbor to itself.
+        }
+        if (nums.length == 2) {
+            return Math.max(nums[0], nums[1]); // Because the street is circular, house 0 and house 1 are neighbors. You can only rob one.
+        }
+        return Math.max(robTabulation(nums, 0, nums.length - 2), robTabulation(nums, 1, nums.length - 1));
+    }
+
+    public int robTabulation(int[] nums, int startHouseNo, int endHouseNo) {
+        var dp = new int[nums.length];
+        dp[startHouseNo] = nums[startHouseNo];
+        dp[startHouseNo + 1] = Math.max(nums[startHouseNo], nums[startHouseNo + 1]);
+
+        for (int i = startHouseNo + 2; i <= endHouseNo; i++) {
+            var robHouse = dp[i - 2] + nums[i];
+            var skipHouse = dp[i - 1];
+            dp[i] = Math.max(robHouse, skipHouse);
+        }
+        return dp[endHouseNo];
+    }
     /**
      * Since the classical Top Down House Robber is very similar to this problem, we will skip that instead we will do the optimised version
      */
-    public int robTopDownOptimised(int[] nums) {
-        var n = nums.length;
-        if (n == 0) return 0; // No houses to rob
-        if (n == 1) return nums[0]; // Only one house to rob
-        var firstOption = robOptimised(nums, 0, n - 2); // Rob from first to second last
-        var secondOption = robOptimised(nums, 1, n - 1); // Rob from second to last
+    public int robTopDownSpaceOptimised(int[] nums) {
+        int n = nums.length;
+        if (n == 0) {
+            return 0;
+        }
+        if (n == 1) {
+            return nums[0]; // since only 1 house, It can't be a neighbor to itself.
+        }
+        if (n == 2) {
+            return Math.max(nums[0], nums[1]); // Because the street is circular, house 0 and house 1 are neighbors. You can only rob one.
+        }
+        var firstOption = robTopDownOptimised(nums, 0, n - 2); // Rob from first to second last
+        var secondOption = robTopDownOptimised(nums, 1, n - 1); // Rob from second to last
         return Math.max(firstOption, secondOption);
     }
 
-    private int robOptimised(int[] nums, int start, int end) {
-        var prevTwo = 0; // Represents dp[i-2]
-        var prevOne = 0; // Represents dp[i-1]
+    private int robTopDownOptimised(int[] nums, int startHouseNo, int endHouseNo) {
+        var minusTwo = nums[startHouseNo];
+        var minusOne = Math.max(nums[startHouseNo], nums[startHouseNo + 1]);
 
-        for (var i = start; i <= end; i++) {
-            var robHouse = nums[i] + prevTwo; // Rob current house
-            var skipHouse = prevOne; // Skip current house
+        for (int i = startHouseNo + 2; i <= endHouseNo; i++) {
+            var robHouse = minusTwo + nums[i];
+            var skipHouse = minusOne;
             var currentRob = Math.max(robHouse, skipHouse);
-            prevTwo = prevOne;
-            prevOne = currentRob;
+            minusTwo = minusOne;
+            minusOne = currentRob;
         }
-        return prevOne;
+        return minusOne;
     }
 
     public static void main(String[] args) {
         var obj = new HouseRobber2();
-        System.out.println("Maximum amount robbed: " + obj.robTopDown(new int[]{2, 3, 2})); // Output: 3
-        System.out.println("Maximum amount robbed: " + obj.robTopDownOptimised(new int[]{1, 2, 3, 1})); // Output: 4
-    }
-
-    /**
-     * @author Mohan Sharma
-     */
-    public static class UniquePaths {
-
-        public int uniquePathsBruteForce(int m, int n) {
-            if (m == 0 || n == 0) {
-                return 0;
-            }
-            return uniquePathsBacktracking(m - 1, n - 1); // need to go to top left corner only not end
-        }
-
-        private int uniquePathsBacktracking(int m, int n) {
-            if (m == 0 && n == 0) {
-                return 1;
-            }
-            if (m < 0 || n < 0) {
-                return 0;
-            }
-            return uniquePathsBacktracking(m - 1, n) + uniquePathsBacktracking(m, n - 1);
-        }
-
-        public int uniquePathsBottomUp(int m, int n) {
-            if (m == 0 || n == 0) {
-                return 0;
-            }
-            var memo = new int[m][n];
-            for (var i = 0; i < m; i++) {
-                Arrays.fill(memo[i], -1);
-            }
-            return uniquePathsMemoized(m - 1, n - 1, memo); // need to go to top left corner only not end
-        }
-
-        private int uniquePathsMemoized(int row, int col, int[][] memo) {
-            if (row == 0 && col == 0) {
-                return 1;
-            }
-            if (row < 0 || col < 0) {
-                return 0;
-            }
-            if (memo[row][col] != -1) {
-                return memo[row][col];
-            }
-            return memo[row][col] = uniquePathsMemoized(row - 1, col, memo) + uniquePathsMemoized(row, col - 1, memo);
-        }
-
-        public int uniquePathsTopDown(int m, int n) {
-            if (m <= 0 || n <= 0) {
-                return 0;
-            }
-            var dp = new int[m][n];
-            dp[0][0] = 1;
-
-            for (int i = 1; i < m; i++) {
-                dp[i][0] = 1; // There's only one way to reach any cell in the first column i.e. from dp[0][0] which is 1
-            }
-            for (int j = 1; j < n; j++) {
-                dp[0][j] = 1; // There's only one way to reach any cell in the first row i.e. from dp[0][0] which is 1
-            }
-
-            for (int i = 1; i < m; i++) {
-                for (int j = 1; j < n; j++) {
-                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
-                }
-            }
-            return dp[m - 1][n - 1];
-        }
-
-        public int uniquePathsTopDownSpaceOptimized(int m, int n) {
-            if (m <= 0 || n <= 0) return 0;
-
-            int[] dp = new int[n];
-            // There's only one way to reach any cell in the first row i.e. from dp[0][0] which is 1
-            Arrays.fill(dp, 1); // Initialize with the first row values
-
-            // i starts from 1 because we already have the first row
-            for (int i = 1; i < m; i++) {
-                // j starts from 1 because dp[0] is always 1, we never update dp[0]
-                for (int j = 1; j < n; j++) {
-                    // new dp[j] = value from left + value from above (old dp[j])
-                    dp[j] = dp[j - 1] + dp[j];
-                }
-            }
-            return dp[n - 1];
-        }
-
-        public static void main(String[] args) {
-            var obj = new UniquePaths();
-            //System.out.println(obj.uniquePathsBruteForce(3, 7));
-            //System.out.println(obj.uniquePathsBruteForce(3, 2));
-            //System.out.println(obj.uniquePathsBottomUp(3, 7));
-            //System.out.println(obj.uniquePathsBottomUp(3, 2));
-            //System.out.println(obj.uniquePathsTopDown(3, 7));
-            //System.out.println(obj.uniquePathsTopDown(3, 2));
-            System.out.println(obj.uniquePathsTopDownSpaceOptimized(1, 2));
-        }
+        System.out.println("Maximum amount robbed Brute Force: " + obj.robBruteForce(new int[]{2, 3, 2})); // Output: 3
+        System.out.println("Maximum amount robbed Brute Force: " + obj.robBruteForce(new int[]{1, 2, 3, 1})); // Output: 4
+        System.out.println("Maximum amount robbed Top Down: " + obj.robTopDown(new int[]{2, 3, 2})); // Output: 3
+        System.out.println("Maximum amount robbed Top Down: " + obj.robTopDown(new int[]{1, 2, 3, 1})); // Output: 4
+        System.out.println("Maximum amount robbed Bottom Up: " + obj.robBottomUp(new int[]{2, 3, 2})); // Output: 3
+        System.out.println("Maximum amount robbed Bottom Up: " + obj.robBottomUp(new int[]{1, 2, 3, 1})); // Output: 4
     }
 }

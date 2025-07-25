@@ -1,12 +1,11 @@
 package com.crack.snap.make.medium.dp;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Mohan Sharma
  */
-public class BuySellWithCooldown {
+public class BuySellwithCooldown {
 
     public int maxProfitBruteForce(int[] prices) {
         return maxProfitBacktracking(prices, 0, false);
@@ -81,7 +80,7 @@ public class BuySellWithCooldown {
     }
 
     public static void main(String[] args) {
-        var obj = new BuySellWithCooldown();
+        var obj = new BuySellwithCooldown();
         System.out.println(obj.maxProfitBruteForce(new int[]{1,2,3,0,2}));
         System.out.println(obj.maxProfitTopDown(new int[]{1,2,3,0,2}));
         System.out.println(obj.maxProfitBottomUp(new int[]{1,2,3,0,2}));
