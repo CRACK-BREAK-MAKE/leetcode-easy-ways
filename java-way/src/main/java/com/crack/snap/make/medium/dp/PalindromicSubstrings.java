@@ -5,6 +5,27 @@ package com.crack.snap.make.medium.dp;
  */
 public class PalindromicSubstrings {
 
+    public int countSubstringsBruteForce(String s) {
+        if (s.isEmpty()) {
+            return 0;
+        }
+        return solveCountSubstringsBruteForce(s, 0);
+    }
+
+    private int solveCountSubstringsBruteForce(String s, int start) {
+        if (start == s.length()) {
+            return 0;
+        }
+        var count = 0;
+        for (int i = start; i < s.length(); i++) {
+            var substring = s.substring(start, i + 1);
+            if (isPalindrome(substring)) {
+                count++;
+            }
+        }
+        return count + solveCountSubstringsBruteForce(s, start + 1);
+    }
+
     public int countSubstringsTopDown(String s) {
         if (s == null || s.length() == 0) {
             return 0;
@@ -25,6 +46,19 @@ public class PalindromicSubstrings {
         }
         count += countPalindromicSubstrings(s, start + 1, memo);
         return  count;
+    }
+
+    private boolean isPalindrome(String s) {
+        var start = 0;
+        var end = s.length() - 1;
+        while (start < end) {
+            if (s.charAt(start) != s.charAt(end)) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
     }
 
     private boolean isPalindrome(String s, int start, int end, Boolean[][] memo) {

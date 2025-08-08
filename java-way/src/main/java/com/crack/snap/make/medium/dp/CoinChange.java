@@ -6,14 +6,15 @@ import java.util.Arrays;
  * @author Mohan Sharma
  */
 public class CoinChange {
+
     public int coinChangeBruteForce(int[] coins, int amount) {
         if (coins == null || coins.length == 0 || amount < 0) {
             return -1;
         }
-        return coinChangeBacktracking(coins, amount);
+        return solveCoinChangeBruteForce(coins, amount);
     }
 
-    private int coinChangeBacktracking(int[] coins, int amount) {
+    private int solveCoinChangeBruteForce(int[] coins, int amount) {
         if (amount == 0) {
             return 0;
         }
@@ -23,7 +24,7 @@ public class CoinChange {
         var minCoins = Integer.MAX_VALUE;
         for (var coin : coins) {
             if (coin <= amount) {
-                var result = coinChangeBacktracking(coins, amount - coin);
+                var result = solveCoinChangeBruteForce(coins, amount - coin);
                 if (result != -1) {
                     minCoins = Math.min(minCoins, result + 1);
                 }

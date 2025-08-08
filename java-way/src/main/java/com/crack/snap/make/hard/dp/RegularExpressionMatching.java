@@ -16,7 +16,7 @@ public class RegularExpressionMatching {
             return i == s.length();
         }
         var firstMatch = i < s.length() && (s.charAt(i) == p.charAt(j) || p.charAt(j) == '.');
-        // now make if choice if the chat at j+1 is *
+        // now make choice if the char at j+1 is *
         if (j + 1 < p.length() && p.charAt(j + 1) == '*') {
             var zeroMatch = isMatchBacktracking(s, i, p, j + 2);
             var oneMatch = firstMatch && isMatchBacktracking(s, i + 1, p, j);

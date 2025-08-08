@@ -34,18 +34,15 @@ public class LongestIncreasingSubsequence {
 
     public int lengthOfLISTopDown(int[] nums) {
         int length = nums.length;
-        var memo = new int[length + 1][length];
-        for (int[] row : memo) {
-            Arrays.fill(row, -1);
-        }
+        var memo = new Integer[length + 1][length];
         return lengthOfLisMemoization(nums, -1, 0, memo);
     }
 
-    private int lengthOfLisMemoization(int[] nums, int prevIndex, int index, int[][] memo) {
+    private int lengthOfLisMemoization(int[] nums, int prevIndex, int index, Integer[][] memo) {
         if (index == nums.length) {
             return 0;
         }
-        if (memo[prevIndex + 1][index] != -1) {
+        if (memo[prevIndex + 1][index] != null) {
             return memo[prevIndex + 1][index];
         }
         var notPick = lengthOfLisMemoization(nums, prevIndex, index + 1, memo);
@@ -94,7 +91,7 @@ public class LongestIncreasingSubsequence {
     }
 
     private int binarySearch(int[] nums, int start, int end, int target) {
-        while (start <= end) { // narrow down instead of exact match
+        while (start <= end) { // search exact value or narrow down to a single element to return the start
             var mid = start + ((end - start) / 2);
             if (nums[mid] == target) {
                 return mid;
@@ -127,6 +124,6 @@ public class LongestIncreasingSubsequence {
         System.out.println(obj.lengthOfLISBruteForce(new int[]{10, 9, 2, 5, 3, 7, 101, 18})); // Output 4
         System.out.println(obj.lengthOfLISTopDown(new int[]{10, 9, 2, 5, 3, 7, 101, 18})); // Output 4
         System.out.println(obj.lengthOfLISBottomUp(new int[]{10, 9, 2, 5, 3, 7, 18}));
-        System.out.println(obj.lengthOfLISBinarySearchTails(new int[]{10, 9, 2, 5, 3, 7, 18}));
+        System.out.println(obj.lengthOfLISBinarySearchTails(new int[]{0,1,0,3,2,3}));
     }
 }

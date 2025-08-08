@@ -31,18 +31,14 @@ public class BuySellwithCooldown {
         if (prices == null || prices.length == 0) {
             return 0;
         }
-        var memo = new int[prices.length][2];
-        for (int i = 0; i < prices.length; i++) {
-            Arrays.fill(memo[i], -1);
-        }
-        return maxProfitMemoization(prices, 0, 0, memo);
+        return maxProfitMemoization(prices, 0, 0, new Integer[prices.length][2]);
     }
 
-    private int maxProfitMemoization(int[] prices, int day, int holding, int[][] memo) {
+    private int maxProfitMemoization(int[] prices, int day, int holding, Integer[][] memo) {
         if (day >= prices.length) {
             return 0;
         }
-        if (memo[day][holding] != -1) {
+        if (memo[day][holding] != null) {
             return memo[day][holding];
         }
         if (holding == 1) {
@@ -58,25 +54,42 @@ public class BuySellwithCooldown {
     }
 
     public int maxProfitBottomUp(int[] prices) {
-        if (prices == null || prices.length == 0) {
+        if (prices == null || prices.length <= 1) {
             return 0;
         }
-        int n = prices.length;
-        var dp = new int[n + 2][2]; // +2 for safe day+2 access, since we know if day >= prices.length profit is 0
-        dp[n -1][1] = -prices[n -1];
-        // Fill from day n-1 down to 0 (reverse of top-down)
-        for (int day = n - 1; day >= 0; day--) {
-            // If holding stock
-            int sell = prices[day] + dp[day + 2][0]; // Sell + cooldown
-            int hold = dp[day + 1][1];               // Keep holding
-            dp[day][1] = Math.max(sell, hold);
 
-            // If not holding stock
-            int buy = -prices[day] + dp[day + 1][1];  // Buy stock
-            int rest = dp[day + 1][0];                // Stay without stock
-            dp[day][0] = Math.max(buy, rest);
+        int n = prices.length;
+        // dp[i][0]: Max profit on day i, ending with no stock (after selling or resting)
+        // dp[i][1]: Max profit on day i, ending with a stock (after buying or holding)
+        int[][] dp = new int[n][2];
+
+        // --- Base Cases ---
+        // Day 0:
+        dp[0][0] = 0; // Do nothing
+        dp[0][1] = -prices[0]; // Buy the stock
+
+        // Day 1:
+        // No stock: either rest from day 0 (profit 0), or sell stock from day 0
+        dp[1][0] = Math.max(dp[0][0], dp[0][1] + prices[1]);
+        // Has stock: either hold from day 0 (profit -prices[0]), or buy today (profit -prices[1])
+        dp[1][1] = Math.max(dp[0][1], -prices[1]);
+
+
+        // --- Fill the rest of the table ---
+        for (int i = 2; i < n; i++) {
+            // Max profit with no stock today:
+            // 1. We had no stock yesterday and rested. (dp[i-1][0])
+            // 2. We had a stock yesterday and sold it today. (dp[i-1][1] + prices[i])
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+
+            // Max profit with a stock today:
+            // 1. We had a stock yesterday and held it. (dp[i-1][1])
+            // 2. We had no stock 2 days ago, rested yesterday (cooldown), and bought today. (dp[i-2][0] - prices[i])
+            dp[i][1] = Math.max(dp[i - 1][1], dp[i - 2][0] - prices[i]);
         }
-        return dp[0][0];
+
+        // The final answer must be a state where we don't hold a stock.
+        return dp[n - 1][0];
     }
 
     public static void main(String[] args) {

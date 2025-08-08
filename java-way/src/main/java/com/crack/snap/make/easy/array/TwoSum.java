@@ -6,7 +6,7 @@ import java.util.HashMap;
 /**
  * @author Mohan Sharma
  */
-public class SumOfTwo {
+public class TwoSum {
 
     /**
      * This method finds two indices in the array such that their values add up to the target.
@@ -92,7 +92,7 @@ public class SumOfTwo {
     public static void main(String[] args) {
         int[] nums = {2, 7, 15, 11};
         int target = 13;
-        var sumOfTwo = new SumOfTwo();
+        var sumOfTwo = new TwoSum();
         System.out.println(Arrays.toString(sumOfTwo.twoSumOn2(nums, target)));
         System.out.println(Arrays.toString(sumOfTwo.twoSumNlogN(new int[]{2, 7, 15, 11}, target)));
         System.out.println(Arrays.toString(sumOfTwo.twoSumHashing(nums, target)));

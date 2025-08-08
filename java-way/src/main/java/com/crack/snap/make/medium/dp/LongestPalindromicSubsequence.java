@@ -9,36 +9,50 @@ public class LongestPalindromicSubsequence {
         if (s == null || s.isEmpty()) {
             return 0;
         }
-        var result = new int[1];
-        longestPalindromeSubseBacktracking(s, 0, "", result);
-        return result[0];
+        return solveLongestPalindromeSubseqBruteForce(s, 0, s.length() - 1);
     }
 
-    private void longestPalindromeSubseBacktracking(String s, int index, String sequence, int[] result) {
-        if (index == s.length()) {
-            return;
+    private int solveLongestPalindromeSubseqBruteForce(String s, int start, int end) {
+        if (start == end) {
+            return 1;
         }
-
-        for (int i = index; i < s.length(); i++) {
-            var newSequence = sequence + s.charAt(i);
-            if (isPalindrome(newSequence)) {
-                result[0] = Math.max(result[0], newSequence.length());
-            }
-            longestPalindromeSubseBacktracking(s, i + 1, newSequence, result);
+        if (start > end) {
+            return 0;
+        }
+        if (s.charAt(start) == s.charAt(end)) {
+            return 2 + solveLongestPalindromeSubseqBruteForce(s, start + 1, end - 1);
+        } else {
+            return Math.max(solveLongestPalindromeSubseqBruteForce(s, start + 1, end), solveLongestPalindromeSubseqBruteForce(s, start, end - 1));
         }
     }
 
-    private boolean isPalindrome(String newSequence) {
-        var start = 0;
-        var end = newSequence.length() - 1;
-        while (start < end) {
-            if (newSequence.charAt(start) != newSequence.charAt(end)) {
-                return false;
-            }
-            start++;
-            end--;
+    public int longestPalindromeSubseqTopDown(String s) {
+        if (s == null || s.isEmpty()) {
+            return 0;
         }
-        return true;
+        return solveLongestPalindromeSubseqTopDown(s, 0, s.length() - 1, new Integer[s.length()][s.length()]);
+    }
+
+    private int solveLongestPalindromeSubseqTopDown(String s, int start, int end, Integer[][] memo) {
+        if (start == end) {
+            return 1;
+        }
+        if (start > end) {
+            return 0;
+        }
+        if (memo[start][end] != null) {
+            return memo[start][end];
+        }
+        var result = 0;
+        if (s.charAt(start) == s.charAt(end)) {
+            result = 2 + solveLongestPalindromeSubseqTopDown(s, start + 1, end - 1, memo);
+        } else {
+            result = Math.max(
+                    solveLongestPalindromeSubseqTopDown(s, start + 1, end, memo),
+                    solveLongestPalindromeSubseqTopDown(s, start, end - 1, memo)
+            );
+        }
+        return memo[start][end] = result;
     }
 
     public int longestPalindromeSubseqBottomUp(String s) {

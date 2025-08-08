@@ -32,7 +32,7 @@ public class DistinctSubsequences {
         if (s.length() < t.length()) {
             return 0;
         }
-        return numDistinctMemoization(s, 0, t, 0, new Integer[s.length() + 1][t.length() + 1]);
+        return numDistinctMemoization(s, 0, t, 0, new Integer[s.length()][t.length()]);
     }
 
     private int numDistinctMemoization(String s, int i, String t, int j, Integer[][] memo) {
@@ -55,15 +55,17 @@ public class DistinctSubsequences {
     }
 
     public int numDistinctBottomUp(String s, String t) {
-        if (s.length() < t.length()) {
+        int m = s.length();
+        int n = t.length();
+        if (m < n) {
             return 0;
         }
-        var dp = new int[s.length() + 1][t.length() + 1];
-        for (int i = 0; i <= s.length(); i++) {
+        var dp = new int[m + 1][n + 1];
+        for (int i = 0; i <= m; i++) {
             dp[i][0] = 1;
         }
-        for (int i = 1; i <= s.length(); i++) {
-            for (int j = 1; j <= t.length(); j++) {
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
                 var count = dp[i - 1][j]; // not pick
                 if (s.charAt(i - 1) == t.charAt(j - 1)) {
                     count += dp[i - 1][j - 1]; // pick
@@ -71,7 +73,7 @@ public class DistinctSubsequences {
                 dp[i][j] = count;
             }
         }
-        return dp[s.length()][t.length()];
+        return dp[m][n];
     }
 
     public static void main(String[] args) {

@@ -1,5 +1,7 @@
 package com.crack.snap.make.medium.dp;
 
+import java.util.Arrays;
+
 /**
  * @author Mohan Sharma
  */
@@ -20,50 +22,15 @@ public class PartitionEqualSubsetSum {
     }
 
     private boolean canPartitionBacktracking(int[] nums, int index, int target) {
-        if (index == nums.length) {
-            return target == 0;
-        }
-        if (target < 0) {
-            return false;
-        }
         if (target == 0) {
             return true;
         }
-        for (int j = index; j < nums.length; j++) {
-            if (canPartitionBacktracking(nums, j + 1, target - nums[j])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean canPartitionBruteForce2(int[] nums) {
-        if (nums == null || nums.length == 0) {
+        if (target < 0 || index >= nums.length) {
             return false;
-        }
-        int sum = 0;
-        for (int num : nums) {
-            sum += num;
-        }
-        if (sum % 2 != 0) {
-            return false;
-        }
-        return canPartitionBacktracking2(nums, 0, sum/2);
-    }
-
-    private boolean canPartitionBacktracking2(int[] nums, int index, int target) {
-        if (index == nums.length - 1) {
-            return target ==  nums[index];
-        }
-        if (target < 0) {
-            return false;
-        }
-        if (target == 0) {
-            return true;
         }
         // pick or not pick
-        return canPartitionBacktracking2(nums, index + 1, target - nums[index]) ||
-                canPartitionBacktracking2(nums, index + 1, target);
+        return canPartitionBacktracking(nums, index + 1, target - nums[index]) ||
+                canPartitionBacktracking(nums, index + 1, target);
     }
 
     public boolean canPartitionTopDown(int[] nums) {
@@ -84,14 +51,11 @@ public class PartitionEqualSubsetSum {
     }
 
     private boolean canPartitionMemoization(int[] nums, int index, int target, Boolean[][] memo) {
-        if (index == nums.length) {
-            return target == 0;
-        }
-        if (target < 0) {
-            return false;
-        }
         if (target == 0) {
             return true;
+        }
+        if (target < 0 || index >= nums.length) {
+            return false;
         }
         if (memo[index][target] != null) {
             return memo[index][target];
@@ -105,42 +69,37 @@ public class PartitionEqualSubsetSum {
         if (nums == null || nums.length == 0) {
             return false;
         }
-        int sum = 0;
-        for (int num : nums) {
-            sum += num;
-        }
+        int sum = Arrays.stream(nums).sum();
         if (sum % 2 != 0) {
             return false;
         }
         int target = sum / 2;
         var n = nums.length;
-        var dp = new boolean[n + 1][target + 1];
-        for (var i = 0; i <= n; i++) {
-            dp[i][0] = true;
+        var dp = new boolean[target + 1][n];
+        for (var i = 0; i < n; i++) {
+            dp[0][i] = true; // no matter the num if the target is 0 it is true
         }
 
-        for (var i = 1; i <= n; i++) {
-            int item = nums[i - 1];
-            for (var j = 1; j <= target; j++) {
+        for (var i = 1; i <= target; i++) {
+            for (var j = 1; j <n; j++) {
                 // don't pick the item
-                dp[i][j] = dp[i - 1][j];
-                if (item <= j) {
+                dp[i][j] = dp[i][j - 1];
+                if (nums[j] <= i) {
                     // pick the item
-                    dp[i][j] = dp[i][j] || dp[i - 1][j - item];
+                    dp[i][j] = dp[i][j] || dp[i - nums[j]][j - 1];
                 }
             }
         }
-        return dp[n][target];
+        return dp[target][n - 1];
     }
 
     public static void main(String[] args) {
         var obj = new PartitionEqualSubsetSum();
         System.out.println(obj.canPartitionBruteForce(new int[]{1, 5, 11, 5}));
         System.out.println(obj.canPartitionBruteForce(new int[]{1, 2, 3, 5}));
-        System.out.println(obj.canPartitionBruteForce2(new int[]{1, 5, 11, 5}));
-        System.out.println(obj.canPartitionBruteForce2(new int[]{1, 2, 3, 5}));
         System.out.println(obj.canPartitionTopDown(new int[]{1, 5, 11, 5}));
         System.out.println(obj.canPartitionTopDown(new int[]{1, 2, 3, 5}));
         System.out.println(obj.canPartitionBottomUp(new int[]{1, 5, 11, 5}));
+        System.out.println(obj.canPartitionBottomUp(new int[]{1, 2, 3, 5}));
     }
 }

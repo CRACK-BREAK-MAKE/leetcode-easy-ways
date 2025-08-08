@@ -5,7 +5,7 @@ import java.util.HashSet;
 /**
  * @author Mohan Sharma
  */
-public class DuplicateFinder {
+public class ContainsDuplicate {
 
     /**
      * This method checks if the given array contains duplicate elements.
@@ -98,7 +98,7 @@ public class DuplicateFinder {
     }
 
     public static void main(String[] args) {
-        DuplicateFinder duplicateFinder = new DuplicateFinder();
+        ContainsDuplicate duplicateFinder = new ContainsDuplicate();
         System.out.println(duplicateFinder.containsDuplicateSort(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
         System.out.println(duplicateFinder.containsDuplicateSort(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 1}));
     }

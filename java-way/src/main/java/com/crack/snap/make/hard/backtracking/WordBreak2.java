@@ -1,4 +1,4 @@
-package com.crack.snap.make.medium.dp;
+package com.crack.snap.make.hard.backtracking;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -34,7 +34,7 @@ public class EditDistance {
     }
 
     public int minDistanceTopDown(String word1, String word2) {
-        return minDistanceMemoization(word1, 0, word2, 0, new Integer[word1.length() + 1][word2.length() + 1]);
+        return minDistanceMemoization(word1, 0, word2, 0, new Integer[word1.length()][word2.length()]);
     }
 
     private int minDistanceMemoization(String word1, int i, String word2, int j, Integer[][] memo) {

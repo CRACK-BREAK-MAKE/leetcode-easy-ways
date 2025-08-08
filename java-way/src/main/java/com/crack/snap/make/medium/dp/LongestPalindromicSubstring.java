@@ -5,11 +5,36 @@ package com.crack.snap.make.medium.dp;
  */
 public class LongestPalindromicSubstring {
 
+    public String longestPalindromeBruteForce(String s) {
+        if (s == null || s.isBlank()) {
+            return "";
+        }
+        return solveLongestPalindromeBruteForce(s, 0);
+    }
+
+    private String solveLongestPalindromeBruteForce(String s, int start) {
+        if (start == s.length()) {
+            return "";
+        }
+        var palindromicSubstring = "";
+        for (int end = start; end < s.length(); end++) {
+            var substring = s.substring(start, end + 1);
+            if (isPalindrome(substring)) {
+                palindromicSubstring = substring.length() > palindromicSubstring.length() ? substring : palindromicSubstring;
+            }
+        }
+        var res = solveLongestPalindromeBruteForce(s, start + 1);
+        if (res.length() >   palindromicSubstring.length()) {
+            palindromicSubstring = res;
+        }
+        return palindromicSubstring;
+    }
+
     /**
      * Not recommended for large strings due to exponential time complexity.
      * TLE
      */
-    public String longestPalindromeBruteForce(String s) {
+    public String longestPalindromeBottomUp(String s) {
         var memo = new Boolean[s.length()][s.length()];
         var result = new String[1];
         result[0] = ""; // Initialize with an empty string
@@ -43,6 +68,21 @@ public class LongestPalindromicSubstring {
             return memo[start][end] = isPalindrome(s, start + 1, end - 1, memo);
         }
         return false;
+    }
+
+    private boolean isPalindrome(String s) {
+        if (s == null || s.isEmpty()) {
+            return false;
+        }
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return  false;
+            }
+            left++;
+            right--;
+        }
+        return  true;
     }
 
     /**
@@ -113,17 +153,13 @@ public class LongestPalindromicSubstring {
             dp[i][i] = true; // Single character is a palindrome
         }
 
-        for (var i = 0; i < n - 1; i ++) {
-            dp[i][i + 1] = (s.charAt(i) == s.charAt(i + 1)); // Two characters are a palindrome if they are equal
+        for (var i = 0; i < n - 1; i++) {
+            dp[i][i + 1] = s.charAt(i) == s.charAt(i + 1);
             if (dp[i][i + 1]) {
-                var substring = s.substring(i, i + 2);
-                if (substring.length() > result.length()) {
-                    result = substring; // Update result if we found a longer palindrome
-                }
+                result = s.substring(i, i + 2);
             }
         }
-
-        for (var length = 3; length<=n; length++) {
+        for (var length = 3; length <= n; length++) {
             for (var i = 0; i <= n - length; i++) {
                 var j = i + length - 1; // Ending index of the substring
                 dp[i][j] = (s.charAt(i) == s.charAt(j)) && dp[i + 1][j - 1]; // Check if the characters match and the substring between them is a palindrome
@@ -167,6 +203,8 @@ public class LongestPalindromicSubstring {
 
     public static void main(String[] args) {
         var obj = new LongestPalindromicSubstring();
+        System.out.println(obj.longestPalindromeBruteForce("babad")); // Output: "bab" or "aba"
+        System.out.println(obj.longestPalindromeBruteForce("cbbd")); // Output: "bb"
         System.out.println(obj.longestPalindromeTopDown("babad")); // Output: "bab" or "aba"
         System.out.println(obj.longestPalindromeTopDown("cbbd")); // Output: "bb"
         System.out.println(obj.longestPalindromeTopDown("a")); // Output: "a"

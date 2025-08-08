@@ -29,21 +29,17 @@ public class UniquePaths {
         if (m == 0 || n == 0) {
             return 0;
         }
-        var memo = new int[m][n];
-        for (var i = 0; i < m; i++) {
-            Arrays.fill(memo[i], -1);
-        }
-        return uniquePathsMemoized(m - 1, n - 1, memo); // need to go to top left corner only not end
+        return uniquePathsMemoized(m - 1, n - 1, new Integer[m][n]); // need to go to top left corner only not end
     }
 
-    private int uniquePathsMemoized(int row, int col, int[][] memo) {
+    private int uniquePathsMemoized(int row, int col, Integer[][] memo) {
         if (row == 0 && col == 0) {
             return 1;
         }
         if (row < 0 || col < 0) {
             return 0;
         }
-        if (memo[row][col] != -1) {
+        if (memo[row][col] != null) {
             return memo[row][col];
         }
         return memo[row][col] = uniquePathsMemoized(row - 1, col, memo) + uniquePathsMemoized(row, col - 1, memo);
@@ -56,11 +52,15 @@ public class UniquePaths {
         var dp = new int[m][n];
         dp[0][0] = 1;
 
+        // if there is only one column, no matter how many rows are there, there is only one way to reach dp[m][0]
+        // as you can go only down
         for (int i = 1; i < m; i++) {
-            dp[i][0] = 1; // There's only one way to reach any cell in the first column i.e. from dp[0][0] which is 1
+            dp[i][0] = 1;
         }
+        // if there is only one row, no matter how many cols are there, there is only one way to reach dp[0][n]
+        // as you can go only right
         for (int j = 1; j < n; j++) {
-            dp[0][j] = 1; // There's only one way to reach any cell in the first row i.e. from dp[0][0] which is 1
+            dp[0][j] = 1;
         }
 
         for (int i = 1; i < m; i++) {
@@ -83,7 +83,7 @@ public class UniquePaths {
             // j starts from 1 because dp[0] is always 1, we never update dp[0]
             for (int j = 1; j < n; j++) {
                 // new dp[j] = value from left + value from above (old dp[j])
-                dp[j] = dp[j - 1] + dp[j];
+                dp[j] =  dp[j] + dp[j - 1];
             }
         }
         return dp[n - 1];
@@ -93,10 +93,10 @@ public class UniquePaths {
         var obj = new UniquePaths();
         //System.out.println(obj.uniquePathsBruteForce(3, 7));
         //System.out.println(obj.uniquePathsBruteForce(3, 2));
-        //System.out.println(obj.uniquePathsBottomUp(3, 7));
-        //System.out.println(obj.uniquePathsBottomUp(3, 2));
-        //System.out.println(obj.uniquePathsTopDown(3, 7));
-        //System.out.println(obj.uniquePathsTopDown(3, 2));
-        System.out.println(obj.uniquePathsTopDownSpaceOptimized(1, 2));
+        System.out.println(obj.uniquePathsBottomUp(3, 7));
+        System.out.println(obj.uniquePathsBottomUp(3, 2));
+        System.out.println(obj.uniquePathsTopDown(3, 7));
+        System.out.println(obj.uniquePathsTopDown(3, 2));
+        System.out.println(obj.uniquePathsTopDownSpaceOptimized(3, 7));
     }
 }

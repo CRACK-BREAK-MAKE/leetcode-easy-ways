@@ -1,5 +1,6 @@
 package com.crack.snap.make.easy.array;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -41,12 +42,12 @@ public class ValidAnagram {
         }
 
         // Check if all counts are zero
-        return IntStream.of(counter).noneMatch(data -> data != 0);
+        return Arrays.stream(counter).allMatch(data -> data == 0);
     }
 
     public static void main(String[] args) {
-        String s = "racecar", t = "carrace";
         var anagram = new ValidAnagram();
-        System.out.println(anagram.isAnagram(s, t));
+        System.out.println(anagram.isAnagram("racecar", "carrace"));
+        System.out.println(anagram.isAnagram("rat", "car"));
     }
 }
